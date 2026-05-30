@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Purchase_Order_Approval</fullName>
+    <active>true</active>
+    <allowRecall>true</allowRecall>
+    <description>Approval process for Purchase Order. Bell notification sent to approver via Apex with direct record link to Inventory Approval Dashboard.</description>
+    <label>Purchase Order Approval</label>
+    <entryCriteria>
+        <criteriaItems>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Draft</value>
+        </criteriaItems>
+        <logicalFilter>1</logicalFilter>
+    </entryCriteria>
+    <initialSubmissionActions>
+        <fieldUpdate>Purchase_Order_Status_Pending_Approval</fieldUpdate>
+    </initialSubmissionActions>
+    <finalApprovalActions>
+        <fieldUpdate>Purchase_Order_Status_Approved</fieldUpdate>
+    </finalApprovalActions>
+    <finalRejectionActions>
+        <fieldUpdate>Purchase_Order_Status_Rejected</fieldUpdate>
+    </finalRejectionActions>
+    <recordEditability>ReadOnly</recordEditability>
+    <reentryBehavior>NotAllowed</reentryBehavior>
+    <skipEntryCriteria>false</skipEntryCriteria>
+    <approvalSteps>
+        <fullName>Manager_Approval</fullName>
+        <label>Manager Approval</label>
+        <allowDelegate>false</allowDelegate>
+        <assignedApprover>
+            <approver>
+                <name>Manager</name>
+                <type>Manager</type>
+            </approver>
+            <whenMultipleApprovers>FirstResponse</whenMultipleApprovers>
+        </assignedApprover>
+        <entryCriteria>
+            <formula>true</formula>
+        </entryCriteria>
+        <ifCriteriaNotMet>GotoNextStep</ifCriteriaNotMet>
+        <label>Manager Approval</label>
+        <rejectBehavior>
+            <type>RejectRequest</type>
+        </rejectBehavior>
+    </approvalSteps>
+</ApprovalProcess>

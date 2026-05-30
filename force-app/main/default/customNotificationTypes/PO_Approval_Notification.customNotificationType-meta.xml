@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customNotifTypeName>PO_Approval_Notification</customNotifTypeName>
+    <description>Bell notification sent to approver when a Purchase Order is submitted for approval. Click to open the PO record and review the Inventory Approval Dashboard.</description>
+    <desktop>true</desktop>
+    <masterLabel>PO Approval Notification</masterLabel>
+    <mobile>true</mobile>
+</CustomNotificationType>

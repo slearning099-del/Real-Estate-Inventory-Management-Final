@@ -1,0 +1,226 @@
+﻿<template>
+    <lightning-card title="Project Phase Inventory Dashboard" icon-name="standard:dashboard">
+        
+        <!-- Project Selection -->
+        <div class="slds-m-around_medium">
+            <lightning-combobox
+                name="project"
+                label="Select Project"
+                placeholder="Choose a Project"
+                options={projectOptions}
+                value={selectedProjectId}
+                onchange={handleProjectChange}
+                variant="label-inline"
+                class="project-selector">
+            </lightning-combobox>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-m-around_large slds-text-align_center">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                <p class="slds-m-top_small">Loading inventory data...</p>
+            </div>
+        </template>
+
+        <!-- No Data Message -->
+        <template if:true={showNoData}>
+            <div class="slds-m-around_large slds-text-align_center">
+                <lightning-icon icon-name="utility:info" size="large" class="slds-m-bottom_small"></lightning-icon>
+                <p class="slds-text-heading_small">No Data Available</p>
+                <p class="slds-m-top_small slds-text-color_weak">
+                    {noDataMessage}
+                </p>
+            </div>
+        </template>
+
+        <!-- Dashboard Content -->
+        <template if:true={showDashboard}>
+            
+            <!-- KPI Cards -->
+            <div class="slds-m-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    
+                    <!-- Total Available Stock Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card kpi-card kpi-available">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="kpi-content">
+                                    <lightning-icon icon-name="utility:package" size="medium" 
+                                        class="kpi-icon"></lightning-icon>
+                                    <div class="kpi-details">
+                                        <h3 class="kpi-title">Available Stock</h3>
+                                        <p class="kpi-value">{totalAvailable}</p>
+                                        <p class="kpi-label">Total Units</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Total Used Stock Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card kpi-card kpi-used">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="kpi-content">
+                                    <lightning-icon icon-name="utility:cart" size="medium" 
+                                        class="kpi-icon"></lightning-icon>
+                                    <div class="kpi-details">
+                                        <h3 class="kpi-title">Used Stock</h3>
+                                        <p class="kpi-value">{totalUsed}</p>
+                                        <p class="kpi-label">Total Units</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Total Returned Stock Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card kpi-card kpi-returned">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="kpi-content">
+                                    <lightning-icon icon-name="utility:undo" size="medium" 
+                                        class="kpi-icon"></lightning-icon>
+                                    <div class="kpi-details">
+                                        <h3 class="kpi-title">Returned Stock</h3>
+                                        <p class="kpi-value">{totalReturned}</p>
+                                        <p class="kpi-label">Total Units</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="slds-m-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    
+                    <!-- Donut Chart -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <article class="slds-card chart-card">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <span class="slds-text-heading_small">Stock Distribution</span>
+                                        </h2>
+                                    </div>
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="chart-container">
+                                    <canvas lwc:ref="donutChart"></canvas>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Phase Summary Table -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <article class="slds-card">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <span class="slds-text-heading_small">Phase Summary</span>
+                                        </h2>
+                                    </div>
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <template if:true={phaseSummaries}>
+                                    <div class="phase-summary-container">
+                                        <template for:each={phaseSummaries} for:item="phase">
+                                            <div key={phase.phaseId} class="phase-summary-item" 
+                                                 data-phase-id={phase.phaseId}
+                                                 onclick={handlePhaseClick}>
+                                                <div class="phase-header">
+                                                    <h3 class="phase-name">{phase.phaseName}</h3>
+                                                </div>
+                                                <div class="phase-stats">
+                                                    <div class="stat">
+                                                        <span class="stat-label">Available:</span>
+                                                        <span class="stat-value stat-available">{phase.totalAvailable}</span>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <span class="stat-label">Used:</span>
+                                                        <span class="stat-value stat-used">{phase.totalUsed}</span>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <span class="stat-label">Returned:</span>
+                                                        <span class="stat-value stat-returned">{phase.totalReturned}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Details Table -->
+            <div class="slds-m-around_medium">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span class="slds-text-heading_small">
+                                        {tableTitle}
+                                    </span>
+                                </h2>
+                            </div>
+                            <div class="slds-no-flex">
+                                <template if:true={selectedPhaseId}>
+                                    <lightning-button 
+                                        label="Show All Phases" 
+                                        onclick={handleShowAll}
+                                        variant="neutral">
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body">
+                        <lightning-datatable
+                            key-field="itemName"
+                            data={filteredInventoryItems}
+                            columns={columns}
+                            hide-checkbox-column
+                            show-row-number-column>
+                        </lightning-datatable>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Bar Chart - Item-wise Details -->
+            <template if:true={selectedPhaseId}>
+                <div class="slds-m-around_medium">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-heading_small">Item-wise Stock Analysis</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="chart-container-bar">
+                                <canvas lwc:ref="barChart"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </template>
+
+        </template>
+    </lightning-card>
+</template>

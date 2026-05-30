@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Phase_Vr</fullName>
+    <active>true</active>
+    <errorConditionFormula>Destination_Phase__c  =  Source_Phase__c</errorConditionFormula>
+    <errorMessage>Source Phase and Destination Phase are not same , Please enter the different Phase.</errorMessage>
+</ValidationRule>

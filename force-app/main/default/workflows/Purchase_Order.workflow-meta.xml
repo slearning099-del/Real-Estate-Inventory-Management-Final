@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>Purchase_Order_Status_Pending_Approval</fullName>
+        <field>Status__c</field>
+        <description>Set PO status to Pending Approval when submitted for approval.</description>
+        <operation>Assign</operation>
+        <value>Pending Approval</value>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Purchase_Order_Status_Approved</fullName>
+        <field>Status__c</field>
+        <description>Set PO status to Approved when the approval process completes successfully.</description>
+        <operation>Assign</operation>
+        <value>Approved</value>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Purchase_Order_Status_Rejected</fullName>
+        <field>Status__c</field>
+        <description>Set PO status to Rejected when the approval process is rejected.</description>
+        <operation>Assign</operation>
+        <value>Rejected</value>
+    </fieldUpdates>
+</Workflow>

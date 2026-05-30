@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Available_Item_Stock__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Available Item Stock</label>
+    <referenceTo>Available_Stock__c</referenceTo>
+    <relationshipLabel>Used Item Stocks</relationshipLabel>
+    <relationshipName>Used_Item_Stocks</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

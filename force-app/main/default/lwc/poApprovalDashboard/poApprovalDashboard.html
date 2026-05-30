@@ -1,0 +1,441 @@
+<template>
+    <div class="approval-dashboard">
+
+        <!-- ── LOADING ──────────────────────────────────────────── -->
+        <template if:true={isLoading}>
+            <div class="spinner-overlay">
+                <lightning-spinner
+                    alternative-text="Loading approval dashboard"
+                    size="large"
+                    variant="brand">
+                </lightning-spinner>
+            </div>
+        </template>
+
+        <!-- ── ERROR ────────────────────────────────────────────── -->
+        <template if:true={hasError}>
+            <div class="error-panel">
+                <lightning-icon icon-name="utility:error" size="small"
+                    variant="inverse" class="slds-m-right_x-small">
+                </lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <!-- ── MAIN DASHBOARD ────────────────────────────────────── -->
+        <template if:true={showDashboard}>
+
+            <!-- 1. HEADER BAR ─────────────────────────────────── -->
+            <div class="dash-header">
+                <div class="dash-header-left">
+                    <div class="bell-wrap">
+                        <lightning-icon icon-name="utility:notification" size="small"></lightning-icon>
+                        <template if:true={data.canActOnApproval}>
+                            <span class="bell-badge">1</span>
+                        </template>
+                    </div>
+                    <div class="dash-title-block">
+                        <h1 class="dash-title">Purchase Order Approval</h1>
+                        <p class="dash-subtitle">Review and action the purchase order before approving</p>
+                    </div>
+                </div>
+                <div class="dash-header-right">
+                    <span class={statusBadgeClass}>{data.poHeader.status}</span>
+                    <lightning-button-icon
+                        icon-name="utility:refresh"
+                        variant="border-filled"
+                        alternative-text="Refresh"
+                        title="Refresh"
+                        onclick={handleRefresh}
+                        class="slds-m-left_x-small">
+                    </lightning-button-icon>
+                </div>
+            </div>
+
+            <!-- 2. SUBMIT FOR APPROVAL (Draft POs only) ─────────── -->
+            <template if:true={showSubmitForApproval}>
+                <div class="section-panel section-panel-submit slds-m-bottom_medium">
+                    <div class="section-header section-header-submit">
+                        <lightning-icon icon-name="utility:upload" size="x-small"
+                            class="section-icon"></lightning-icon>
+                        <span class="section-title">Submit for Approval</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="submit-notice slds-m-bottom_medium">
+                            <lightning-icon icon-name="utility:notification" size="small"
+                                class="slds-m-right_x-small notice-icon"></lightning-icon>
+                            <span>
+                                This Purchase Order is in <strong>Draft</strong> status.
+                                Submitting will send a <strong>bell notification</strong> to the
+                                approver with a direct link to this record.
+                                The Inventory Approval Dashboard will load automatically when
+                                the approver opens the notification.
+                            </span>
+                        </div>
+                        <lightning-textarea
+                            label="Submission Comments (optional)"
+                            placeholder="Add any notes for the approver..."
+                            value={submitRemarks}
+                            onchange={handleSubmitRemarksChange}
+                            max-length="500"
+                            class="slds-m-bottom_medium">
+                        </lightning-textarea>
+                        <div class="action-buttons">
+                            <lightning-button
+                                variant="brand"
+                                label="Submit for Approval"
+                                icon-name="utility:upload"
+                                icon-position="left"
+                                onclick={handleSubmitForApproval}
+                                disabled={submitButtonDisabled}>
+                            </lightning-button>
+                        </div>
+                        <template if:true={isSubmitting}>
+                            <div class="processing-indicator slds-m-top_small">
+                                <lightning-spinner size="small" alternative-text="Submitting"></lightning-spinner>
+                                <span class="slds-m-left_small">Submitting and sending notification...</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 3. KPI CARDS ──────────────────────────────────── -->
+            <div class="kpi-row slds-grid slds-wrap slds-gutters_small slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="kpi-card kpi-blue">
+                        <div class="kpi-icon-wrap">
+                            <lightning-icon icon-name="standard:orders" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">{data.poHeader.poCode}</div>
+                            <div class="kpi-label">PO Number</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="kpi-card kpi-green">
+                        <div class="kpi-icon-wrap">
+                            <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">{data.poHeader.vendorName}</div>
+                            <div class="kpi-label">Vendor</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="kpi-card kpi-orange">
+                        <div class="kpi-icon-wrap">
+                            <lightning-icon icon-name="standard:product" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">{data.poHeader.totalItems}</div>
+                            <div class="kpi-label">Total Items</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="kpi-card kpi-purple">
+                        <div class="kpi-icon-wrap">
+                            <lightning-icon icon-name="standard:metrics" size="small"></lightning-icon>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">{data.poHeader.totalQuantity}</div>
+                            <div class="kpi-label">Total Quantity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. PO DETAILS ─────────────────────────────────── -->
+            <div class="section-panel slds-m-bottom_medium">
+                <div class="section-header">
+                    <lightning-icon icon-name="standard:orders" size="x-small"
+                        class="section-icon"></lightning-icon>
+                    <span class="section-title">Purchase Order Details</span>
+                </div>
+                <div class="section-body">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">PO Number</span>
+                                <span class="detail-value">{data.poHeader.poNumber}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">PO Code</span>
+                                <span class="detail-value">{data.poHeader.poCode}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Vendor</span>
+                                <span class="detail-value">{data.poHeader.vendorName}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Requested By</span>
+                                <span class="detail-value">{data.poHeader.requestedBy}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Requested Date</span>
+                                <span class="detail-value">{data.poHeader.requestedDate}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">PO Date</span>
+                                <span class="detail-value">{data.poHeader.poDate}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Project Phase</span>
+                                <span class="detail-value">{data.poHeader.projectPhase}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Status</span>
+                                <span class={statusBadgeClass}>{data.poHeader.status}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="detail-field">
+                                <span class="detail-label">Total Cost</span>
+                                <span class="detail-value cost-value">{formattedTotalCost}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. APPROVAL SUMMARY ───────────────────────────── -->
+            <div class="slds-m-bottom_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Submitted By</span>
+                            <span class="detail-value">{data.approvalSummary.submittedBy}</span>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Submitted Date</span>
+                            <span class="detail-value">{data.approvalSummary.submittedDate}</span>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Assigned Approver</span>
+                            <span class="detail-value">{data.approvalSummary.approverName}</span>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Total Line Items</span>
+                            <span class="detail-value">{data.approvalSummary.totalItems}</span>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Total Quantity</span>
+                            <span class="detail-value">{data.approvalSummary.totalQuantity}</span>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <div class="detail-field">
+                            <span class="detail-label">Approval Status</span>
+                            <span class={statusBadgeClass}>{data.approvalSummary.approvalStatus}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval History Timeline -->
+                <template if:true={hasHistory}>
+                    <div class="history-section slds-m-top_medium">
+                        <h3 class="history-title">Approval History</h3>
+                        <div class="history-timeline">
+                            <template for:each={data.approvalSummary.history} for:item="step">
+                                <div key={step.createdDate} class="timeline-item">
+                                    <div class="timeline-dot timeline-dot-default">
+                                        <lightning-icon icon-name="utility:clock"
+                                            size="x-small" variant="inverse">
+                                        </lightning-icon>
+                                    </div>
+                                    <div class="timeline-flat">
+                                        <div class="timeline-header">
+                                            <span class="timeline-actor">{step.actorName}</span>
+                                            <span class="badge badge-pending">{step.action}</span>
+                                            <span class="timeline-date">{step.createdDate}</span>
+                                        </div>
+                                        <div class="timeline-step">{step.stepName}</div>
+                                        <template if:true={step.comments}>
+                                            <div class="timeline-comment">
+                                                <lightning-icon icon-name="utility:comments"
+                                                    size="xx-small"
+                                                    class="slds-m-right_xx-small">
+                                                </lightning-icon>
+                                                {step.comments}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- 5. LINE ITEMS TABLE ───────────────────────────── -->
+            <div class="section-panel slds-m-bottom_medium">
+                <div class="section-header">
+                    <lightning-icon icon-name="standard:product" size="x-small"
+                        class="section-icon"></lightning-icon>
+                    <span class="section-title">Purchase Order Line Items</span>
+                    <span class="section-badge">{lineItemCountLabel}</span>
+                </div>
+                <div class="section-body slds-p-around_none">
+                    <template if:true={hasLineItems}>
+                        <div class="table-scroll-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered
+                                          slds-table_striped po-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="th-cell">#</th>
+                                        <th class="th-cell">Line Item Code</th>
+                                        <th class="th-cell">Item Name</th>
+                                        <th class="th-cell">Item Code</th>
+                                        <th class="th-cell">Quantity</th>
+                                        <th class="th-cell">Unit</th>
+                                        <th class="th-cell">Unit Cost</th>
+                                        <th class="th-cell">Total Cost</th>
+                                        <th class="th-cell">Project Phase</th>
+                                        <th class="th-cell">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={data.lineItems} for:item="item">
+                                        <tr key={item.id} class="slds-hint-parent">
+                                            <td class="td-cell idx-cell">{item.rowIndex}</td>
+                                            <td class="td-cell code-cell">{item.lineItemCode}</td>
+                                            <td class="td-cell name-cell">
+                                                <span class="item-name-text">{item.itemName}</span>
+                                            </td>
+                                            <td class="td-cell">{item.itemCode}</td>
+                                            <td class="td-cell qty-cell">
+                                                <span class="qty-pill">{item.quantity}</span>
+                                            </td>
+                                            <td class="td-cell">{item.unit}</td>
+                                            <td class="td-cell">{item.unitCost}</td>
+                                            <td class="td-cell cost-cell">{item.totalCost}</td>
+                                            <td class="td-cell">{item.projectPhase}</td>
+                                            <td class="td-cell">
+                                                <span class="badge badge-pending">{item.statusBadge}</span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template if:false={hasLineItems}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:inbox" size="medium"
+                                class="empty-icon"></lightning-icon>
+                            <p>No line items found for this Purchase Order.</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 6. CHARTS ────────────────────────────────────── -->
+            <div class="slds-grid slds-wrap slds-gutters_small slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                    <div class="chart-container">
+                        <canvas class="categoryPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                    <div class="chart-container">
+                        <canvas class="statusPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                    <div class="chart-container">
+                        <canvas class="quantityBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. APPROVAL ACTIONS ───────────────────────────── -->
+            <template if:true={data.canActOnApproval}>
+                <div class="section-panel section-panel-action slds-m-bottom_medium">
+                    <div class="section-header section-header-action">
+                        <lightning-icon icon-name="utility:check" size="x-small"
+                            class="section-icon"></lightning-icon>
+                        <span class="section-title">Approval Actions</span>
+                    </div>
+                    <div class="section-body">
+                        <div class="action-notice slds-m-bottom_medium">
+                            <lightning-icon icon-name="utility:info" size="small"
+                                class="slds-m-right_x-small notice-icon"></lightning-icon>
+                            <span>You are the assigned approver for this Purchase Order.
+                                  Review all items above before taking action.</span>
+                        </div>
+                        <lightning-textarea
+                            label="Remarks / Comments"
+                            placeholder="Add your remarks or reason for approval / rejection..."
+                            value={remarks}
+                            onchange={handleRemarksChange}
+                            max-length="1000"
+                            class="slds-m-bottom_medium remarks-area">
+                        </lightning-textarea>
+                        <div class="action-buttons">
+                            <lightning-button
+                                variant="success"
+                                label="Approve Purchase Order"
+                                icon-name="utility:check"
+                                icon-position="left"
+                                onclick={handleApprove}
+                                disabled={isProcessing}>
+                            </lightning-button>
+                            <lightning-button
+                                variant="destructive"
+                                label="Reject Purchase Order"
+                                icon-name="utility:close"
+                                icon-position="left"
+                                onclick={handleReject}
+                                disabled={isProcessing}>
+                            </lightning-button>
+                        </div>
+                        <template if:true={isProcessing}>
+                            <div class="processing-indicator slds-m-top_small">
+                                <lightning-spinner size="small"
+                                    alternative-text="Processing">
+                                </lightning-spinner>
+                                <span class="slds-m-left_small">Processing approval action...</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- No action notice -->
+            <template if:false={data.canActOnApproval}>
+                <div class="no-action-notice slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:info" size="small"
+                        class="slds-m-right_x-small"></lightning-icon>
+                    <span>Approval actions are only available to the assigned approver
+                          for the current pending step.</span>
+                </div>
+            </template>
+
+        </template>
+    </div>
+</template>

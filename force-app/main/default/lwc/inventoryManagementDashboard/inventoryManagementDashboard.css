@@ -1,0 +1,529 @@
+/* ===========================
+   DASHBOARD CONTAINER
+   =========================== */
+.dashboard-container {
+    background-color: #f3f2f2;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* ===========================
+   MODERN DASHBOARD HEADER
+   =========================== */
+.dashboard-header {
+    background: linear-gradient(135deg, #0176d3 0%, #1589ee 100%);
+    padding: 2rem 1.5rem;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.header-icon {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.header-text h1 {
+    color: #ffffff;
+    margin: 0;
+    font-weight: 700;
+}
+
+.header-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+/* ===========================
+   PROJECT SELECTION CARD
+   =========================== */
+.project-card {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.project-card .slds-card__body_inner {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.project-selector-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.project-selector {
+    width: 100%;
+    max-width: 700px;
+    font-size: 0.95rem;
+    --slds-font-size_medium: 0.95rem;
+    padding: 0.25rem;
+}
+
+/* ===========================
+   SUMMARY METRIC CARDS
+   =========================== */
+.metric-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: opacity 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card .slds-card__body_inner {
+    padding: 1.5rem;
+}
+
+.metric-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.metric-icon-container {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metric-details {
+    flex: 1;
+}
+
+.metric-title {
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+    color: #2b2b2b;
+    font-size: 0.95rem;
+}
+
+.metric-value {
+    margin: 0.5rem 0;
+    font-weight: 800;
+    line-height: 1;
+    font-size: 2.25rem;
+    letter-spacing: -0.5px;
+}
+
+.metric-label {
+    margin: 0.5rem 0 0 0;
+}
+
+/* Available Stock Metric Colors */
+.metric-available::before {
+    background: #34A853;
+}
+
+.metric-available .metric-icon-container {
+    background: rgba(52, 168, 83, 0.1);
+    color: #34A853;
+}
+
+.metric-available .metric-value {
+    color: #34A853;
+}
+
+/* Used Stock Metric Colors */
+.metric-used::before {
+    background: #EA4335;
+}
+
+.metric-used .metric-icon-container {
+    background: rgba(234, 67, 53, 0.1);
+    color: #EA4335;
+}
+
+.metric-used .metric-value {
+    color: #EA4335;
+}
+
+/* Returned Stock Metric Colors */
+.metric-returned::before {
+    background: #FBBC04;
+}
+
+.metric-returned .metric-icon-container {
+    background: rgba(251, 188, 4, 0.1);
+    color: #FBBC04;
+}
+
+.metric-returned .metric-value {
+    color: #FBBC04;
+}
+
+/* ===========================
+   PHASE SUMMARY CARD
+   =========================== */
+.phase-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: box-shadow 0.3s ease;
+}
+
+.phase-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.phase-card .slds-card__header {
+    background: #fafbfc;
+    border-bottom: 2px solid #e5e5e5;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.phase-card .slds-card__body_inner {
+    padding: 1.5rem;
+}
+
+.phase-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.phase-summary-item {
+    padding: 1.25rem;
+    border: 2px solid #e5e5e5;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    position: relative;
+}
+
+.phase-summary-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #0176d3;
+    border-radius: 0.5rem 0 0 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.phase-summary-item:hover {
+    background: #f4f6f9;
+    border-color: #0176d3;
+    box-shadow: 0 4px 12px rgba(1, 118, 211, 0.15);
+    transform: translateY(-2px);
+}
+
+.phase-summary-item:hover::before {
+    opacity: 1;
+}
+
+.phase-header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.phase-name {
+    margin: 0;
+    font-weight: 700;
+    color: #080707;
+    font-size: 1rem;
+}
+
+.phase-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    color: #706e6b;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.stat-available {
+    color: #34A853;
+    background: rgba(52, 168, 83, 0.1);
+}
+
+.stat-used {
+    color: #EA4335;
+    background: rgba(234, 67, 53, 0.1);
+}
+
+.stat-returned {
+    color: #FBBC04;
+    background: rgba(251, 188, 4, 0.1);
+}
+
+/* ===========================
+   TABLE CARD
+   =========================== */
+.table-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: box-shadow 0.3s ease;
+}
+
+.table-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.table-card .slds-card__header {
+    background: #fafbfc;
+    border-bottom: 2px solid #e5e5e5;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem 0.75rem 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-wrapper {
+    padding: 0;
+    overflow-x: auto;
+}
+
+/* Custom Datatable Styling */
+.custom-datatable {
+    border-radius: 0 0 0.75rem 0.75rem;
+}
+
+/* Datatable Row Hover Effect */
+lightning-datatable tbody tr:hover {
+    background-color: #f4f6f9 !important;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+}
+
+/* Sticky Table Header */
+lightning-datatable thead th {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===========================
+   CHART CARD
+   =========================== */
+.chart-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: box-shadow 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.chart-card .slds-card__header {
+    background: #fafbfc;
+    border-bottom: 2px solid #e5e5e5;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.chart-wrapper {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-container-bar {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ===========================
+   LOADING AND NO DATA STATES
+   =========================== */
+.slds-text-align_center {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.project-header-title .slds-text-heading_medium {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #172B4D;
+}
+
+.slds-spinner_container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .metric-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .phase-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container-bar {
+        height: 300px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .phase-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===========================
+   ANIMATIONS
+   =========================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.metric-card,
+.phase-card,
+.table-card,
+.chart-card,
+.project-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.metric-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.metric-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.metric-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* ===========================
+   UTILITY CLASSES
+   =========================== */
+.slds-card {
+    background: #ffffff;
+}
+
+.slds-card__header-title {
+    font-weight: 700;
+    color: #080707;
+}
+
+.slds-text-heading_small {
+    font-weight: 600;
+}
+
+/* ===========================
+   CUSTOM SCROLLBAR
+   =========================== */
+.table-wrapper::-webkit-scrollbar,
+.chart-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track,
+.chart-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb,
+.chart-wrapper::-webkit-scrollbar-thumb {
+    background: #c9c9c9;
+    border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover,
+.chart-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

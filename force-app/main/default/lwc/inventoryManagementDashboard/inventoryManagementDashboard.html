@@ -1,0 +1,237 @@
+<template>
+    <div class="dashboard-container">
+        
+        <!-- Modern Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <lightning-icon icon-name="standard:dashboard" size="medium" class="header-icon"></lightning-icon>
+                <div class="header-text">
+                    <h1 class="slds-text-heading_large slds-m-bottom_x-small">Inventory Management Dashboard</h1>
+                    <p class="slds-text-body_small slds-text-color_weak">Real-time stock monitoring and phase tracking</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Selection Card -->
+        <div class="slds-m-horizontal_medium slds-m-top_medium slds-m-bottom_large">
+            <article class="slds-card project-card">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:filterList" size="small"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title project-header-title">
+                                <span class="slds-text-heading_medium">Project Selection</span>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                <div class="slds-card__body slds-card__body_inner project-body">
+                    <div class="project-selector-wrapper">
+                        <lightning-combobox
+                            name="project"
+                            label="Choose Your Project"
+                            placeholder="Select a project to view inventory..."
+                            options={projectOptions}
+                            value={selectedProjectId}
+                            onchange={handleProjectChange}
+                            variant="label-stacked"
+                            class="project-selector">
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-m-around_large slds-text-align_center">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                <p class="slds-m-top_small">Loading inventory data...</p>
+            </div>
+        </template>
+
+        <!-- No Data Message -->
+        <template if:true={showNoData}>
+            <div class="slds-m-around_large slds-text-align_center">
+                <lightning-icon icon-name="utility:info" size="large" class="slds-m-bottom_small"></lightning-icon>
+                <p class="slds-text-heading_small">No Data Available</p>
+                <p class="slds-m-top_small slds-text-color_weak">
+                    {noDataMessage}
+                </p>
+            </div>
+        </template>
+
+        <!-- Dashboard Content -->
+        <template if:true={showDashboard}>
+            
+            <!-- Summary Metrics Cards -->
+            <div class="slds-m-horizontal_medium slds-m-bottom_medium">
+                <div class="slds-grid slds-wrap slds-gutters_small">
+                    
+                    <!-- Available Stock Metric Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card metric-card metric-available">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="metric-content">
+                                    <div class="metric-icon-container">
+                                        <lightning-icon icon-name="utility:package" size="small" 
+                                            alternative-text="Available Stock" class="metric-icon"></lightning-icon>
+                                    </div>
+                                    <div class="metric-details">
+                                        <h3 class="metric-title slds-text-heading_small">Available Stock</h3>
+                                        <p class="metric-value slds-text-heading_large">{totalAvailable}</p>
+                                        <p class="metric-label slds-text-body_small slds-text-color_weak">Total Units Available</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Used Stock Metric Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card metric-card metric-used">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="metric-content">
+                                    <div class="metric-icon-container">
+                                        <lightning-icon icon-name="utility:cart" size="small" 
+                                            alternative-text="Used Stock" class="metric-icon"></lightning-icon>
+                                    </div>
+                                    <div class="metric-details">
+                                        <h3 class="metric-title slds-text-heading_small">Used Stock</h3>
+                                        <p class="metric-value slds-text-heading_large">{totalUsed}</p>
+                                        <p class="metric-label slds-text-body_small slds-text-color_weak">Total Units Used</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Returned Stock Metric Card -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <article class="slds-card metric-card metric-returned">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="metric-content">
+                                    <div class="metric-icon-container">
+                                        <lightning-icon icon-name="utility:undo" size="small" 
+                                            alternative-text="Returned Stock" class="metric-icon"></lightning-icon>
+                                    </div>
+                                    <div class="metric-details">
+                                        <h3 class="metric-title slds-text-heading_small">Returned Stock</h3>
+                                        <p class="metric-value slds-text-heading_large">{totalReturned}</p>
+                                        <p class="metric-label slds-text-body_small slds-text-color_weak">Total Units Returned</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase Summary Section -->
+            <div class="slds-m-horizontal_medium slds-m-bottom_medium">
+                <article class="slds-card phase-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:layers" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title slds-text-heading_small">Phase Summary</h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <template if:true={phaseSummaries}>
+                            <div class="phase-summary-grid">
+                                <template for:each={phaseSummaries} for:item="phase">
+                                    <div key={phase.phaseId} class="phase-summary-item slds-box" 
+                                         data-phase-id={phase.phaseId}
+                                         onclick={handlePhaseClick}>
+                                        <div class="phase-header">
+                                            <h3 class="phase-name slds-text-heading_small">{phase.phaseName}</h3>
+                                        </div>
+                                        <div class="phase-stats slds-m-top_small">
+                                            <div class="stat">
+                                                <span class="stat-label slds-text-body_small">Available:</span>
+                                                <span class="stat-value stat-available slds-text-heading_medium">{phase.totalAvailable}</span>
+                                            </div>
+                                            <div class="stat slds-m-top_x-small">
+                                                <span class="stat-label slds-text-body_small">Used:</span>
+                                                <span class="stat-value stat-used slds-text-heading_medium">{phase.totalUsed}</span>
+                                            </div>
+                                            <div class="stat slds-m-top_x-small">
+                                                <span class="stat-label slds-text-body_small">Returned:</span>
+                                                <span class="stat-value stat-returned slds-text-heading_medium">{phase.totalReturned}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Inventory Details Table -->
+            <div class="slds-m-horizontal_medium slds-m-bottom_medium">
+                <article class="slds-card table-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:table" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title slds-text-heading_small">{tableTitle}</h2>
+                            </div>
+                            <div class="slds-no-flex">
+                                <template if:true={selectedPhaseId}>
+                                    <lightning-button 
+                                        label="Show All Phases" 
+                                        onclick={handleShowAll}
+                                        variant="neutral">
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body table-wrapper">
+                        <lightning-datatable
+                            key-field="itemName"
+                            data={filteredInventoryItems}
+                            columns={columns}
+                            hide-checkbox-column
+                            show-row-number-column
+                            class="custom-datatable">
+                        </lightning-datatable>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Bar Chart - Item-wise Details -->
+            <template if:true={selectedPhaseId}>
+                <div class="slds-m-horizontal_medium slds-m-bottom_medium">
+                    <article class="slds-card chart-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:chart" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title slds-text-heading_small">Item-wise Stock Analysis</h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner chart-wrapper">
+                            <div class="chart-container-bar">
+                                <canvas lwc:ref="barChart"></canvas>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </template>
+
+        </template>
+    </div>
+</template>

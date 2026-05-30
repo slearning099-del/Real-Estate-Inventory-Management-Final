@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage">
+            <property name="height" type="Integer" default="800" label="Component Height (px)" description="Height of the component in pixels"/>
+        </targetConfig>
+    </targetConfigs>
+    <masterLabel>Project Phase Inventory Dashboard</masterLabel>
+    <description>Professional dashboard for managing and visualizing project phase inventory including available, used, and returned stock with interactive charts and detailed data tables.</description>
+</LightningComponentBundle>

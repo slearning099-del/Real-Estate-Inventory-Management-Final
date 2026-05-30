@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_View_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Unit View Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Garden View</fullName>
+                <default>false</default>
+                <label>Garden View</label>
+            </value>
+            <value>
+                <fullName>Hill View</fullName>
+                <default>false</default>
+                <label>Hill View</label>
+            </value>
+            <value>
+                <fullName>City View</fullName>
+                <default>false</default>
+                <label>City View</label>
+            </value>
+            <value>
+                <fullName>Park View</fullName>
+                <default>false</default>
+                <label>Park View</label>
+            </value>
+            <value>
+                <fullName>Sea View</fullName>
+                <default>false</default>
+                <label>Sea View</label>
+            </value>
+            <value>
+                <fullName>Sunset View</fullName>
+                <default>false</default>
+                <label>Sunset View</label>
+            </value>
+            <value>
+                <fullName>Sunrise View</fullName>
+                <default>false</default>
+                <label>Sunrise View</label>
+            </value>
+            <value>
+                <fullName>Lake View</fullName>
+                <default>false</default>
+                <label>Lake View</label>
+            </value>
+            <value>
+                <fullName>Hills View</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hills View</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

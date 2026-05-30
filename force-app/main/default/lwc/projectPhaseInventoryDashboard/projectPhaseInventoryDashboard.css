@@ -1,0 +1,10 @@
+.dashboard-body {
+  padding: 0 0.75rem 0.75rem 0.75rem;
+  background-color: #f3f6f9;
+}
+
+.actions-row {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}

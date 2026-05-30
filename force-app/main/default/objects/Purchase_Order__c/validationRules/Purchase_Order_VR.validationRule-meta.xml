@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Purchase_Order_VR</fullName>
+    <active>true</active>
+    <errorConditionFormula>( ISBLANK( Project__c )  ||  ISBLANK( Project_Phase__c ) )  &amp;&amp;  ISBLANK( Vendor__c )</errorConditionFormula>
+    <errorMessage>Project Or Project Phase And Vendor Cannot Be Blank.</errorMessage>
+</ValidationRule>

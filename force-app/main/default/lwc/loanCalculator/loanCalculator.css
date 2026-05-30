@@ -1,0 +1,300 @@
+/* ================================
+   LOAN CALCULATOR CUSTOM STYLING
+   ================================ */
+
+/* Summary Box Container */
+.summary-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+/* Summary Card */
+.summary-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border-left: 4px solid #0070d2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+}
+
+/* Card Hover Effect */
+.summary-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 112, 210, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Different Colors for Each Card */
+.summary-card.loan-amount {
+    border-left-color: #0070d2;
+    background: linear-gradient(135deg, #f3f9ff 0%, #e8f4ff 100%);
+}
+
+.summary-card.loan-amount::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 112, 210, 0.05);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+}
+
+.summary-card.monthly-emi {
+    border-left-color: #00a1de;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2ff 100%);
+}
+
+.summary-card.monthly-emi::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 161, 222, 0.05);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+}
+
+.summary-card.total-payment {
+    border-left-color: #00a699;
+    background: linear-gradient(135deg, #f0fefb 0%, #dffbf5 100%);
+}
+
+.summary-card.total-payment::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 166, 153, 0.05);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+}
+
+.summary-card.total-interest {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #fff4f1 0%, #ffe8e1 100%);
+}
+
+.summary-card.total-interest::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(231, 76, 60, 0.05);
+    border-radius: 50%;
+    transform: translate(20px, -20px);
+}
+
+/* Card Header with Icon and Title */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+    flex-wrap: nowrap;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    flex-shrink: 0;
+    min-width: 40px;
+}
+
+.loan-amount .card-icon {
+    background-color: rgba(0, 112, 210, 0.1);
+    color: #0070d2;
+}
+
+.monthly-emi .card-icon {
+    background-color: rgba(0, 161, 222, 0.1);
+    color: #00a1de;
+}
+
+.total-payment .card-icon {
+    background-color: rgba(0, 166, 153, 0.1);
+    color: #00a699;
+}
+
+.total-interest .card-icon {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3e3e3c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+}
+
+/* Card Value */
+.card-value {
+    margin-top: auto;
+    position: relative;
+    z-index: 1;
+    padding-top: 0.75rem;
+}
+
+.card-value-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.3;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .summary-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+        padding: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 0.75rem;
+    }
+
+    .card-value-text {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .summary-card {
+        padding: 1.25rem 1rem;
+        min-height: 160px;
+    }
+
+    .card-value-text {
+        font-size: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 0.7rem;
+    }
+
+    .card-header {
+        gap: 0.5rem;
+    }
+
+    .card-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-container {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 1rem 0.75rem;
+    }
+
+    .summary-card {
+        padding: 1rem;
+        min-height: 140px;
+    }
+
+    .card-value-text {
+        font-size: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 0.65rem;
+    }
+
+    .card-header {
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+}
+
+/* Summary Tab Content */
+.summary-tab-content {
+    padding: 0.5rem;
+    background: #f9fafb;
+    min-height: 240px;
+}
+
+/* Accent Lines */
+.summary-card {
+    position: relative;
+}
+
+.summary-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #0070d2, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.summary-card.loan-amount::after {
+    background: linear-gradient(90deg, transparent, #0070d2, transparent);
+}
+
+.summary-card.monthly-emi::after {
+    background: linear-gradient(90deg, transparent, #00a1de, transparent);
+}
+
+.summary-card.total-payment::after {
+    background: linear-gradient(90deg, transparent, #00a699, transparent);
+}
+
+.summary-card.total-interest::after {
+    background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+}
+
+.summary-card:hover::after {
+    opacity: 1;
+}

@@ -5,8 +5,8 @@
       "default": true
     }
   ],
-  "name": "InventoryUi",
+  "name": "Real Estate &amp; Inventory Management",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "66.0"
+  "sourceApiVersion": "67.0"
 }

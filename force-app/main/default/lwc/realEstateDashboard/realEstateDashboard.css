@@ -1,0 +1,740 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Real Estate CRM Dashboard
+   Follows Salesforce Lightning Design System (SLDS) Reports & Dashboards
+   visual language exactly — tokens, spacing, typography, card patterns.
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── SLDS colour tokens (matches Salesforce palette) ─────────────── */
+:host {
+    --re-navy:        #032d60;
+    --re-blue:        #0176d3;
+    --re-blue-light:  #d8edff;
+    --re-green:       #2e844a;
+    --re-green-light: #cdefc4;
+    --re-orange:      #dd7a01;
+    --re-orange-light:#fde8c8;
+    --re-purple:      #7526e3;
+    --re-purple-light:#ece1ff;
+    --re-brand:       #1b96ff;
+    --re-brand-light: #d8edff;
+    --re-grey-bg:     #f3f3f3;
+    --re-border:      #dddbda;
+    --re-text-weak:   #706e6b;
+    --re-shadow:      0 2px 4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.06);
+    --re-shadow-hover:0 4px 12px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.08);
+    --re-radius:      .375rem;
+    --re-transition:  all .18s ease;
+}
+
+/* ── Page wrapper ─────────────────────────────────────────────────── */
+.re-dashboard {
+    background: var(--re-grey-bg);
+    min-height: 100vh;
+}
+
+/* ── Page header — matches slds-page-header look ─────────────────── */
+.re-page-header {
+    background: #fff;
+    border-bottom: 1px solid var(--re-border);
+    border-radius: var(--re-radius);
+    box-shadow: var(--re-shadow);
+}
+
+.re-header-icon-wrap {
+    background: var(--re-navy);
+    border-radius: .25rem;
+    padding: .25rem;
+}
+
+.re-page-title {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--re-navy) !important;
+}
+
+.re-page-meta {
+    font-size: .8125rem;
+    color: var(--re-text-weak);
+}
+
+.re-updated-time {
+    color: var(--re-blue);
+    font-weight: 500;
+}
+
+/* ── Section labels — matches Salesforce "Related" section headers ── */
+.re-section-label {
+    display: flex;
+    align-items: center;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--re-text-weak);
+    padding: 0 .25rem;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────────── */
+.re-spinner-container {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SUMMARY METRIC TILES
+   Matches Salesforce Dashboard "metric" component tiles
+═══════════════════════════════════════════════════════════════════════ */
+.re-metric-tile {
+    background: #fff;
+    border-radius: var(--re-radius);
+    box-shadow: var(--re-shadow);
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .375rem;
+    border-top: 3px solid transparent;
+    transition: var(--re-transition);
+    height: 100%;
+}
+
+.re-metric-tile:hover {
+    box-shadow: var(--re-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.re-metric-tile_navy   { border-top-color: var(--re-navy); }
+.re-metric-tile_blue   { border-top-color: var(--re-blue); }
+.re-metric-tile_orange { border-top-color: var(--re-orange); }
+.re-metric-tile_green  { border-top-color: var(--re-green); }
+.re-metric-tile_purple { border-top-color: var(--re-purple); }
+
+.re-metric-tile__icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--re-grey-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: .125rem;
+}
+
+.re-metric-tile__value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--re-navy);
+    line-height: 1;
+}
+
+.re-metric-tile__label {
+    font-size: .75rem;
+    color: var(--re-text-weak);
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KPI CARDS
+   Matches Salesforce Dashboard "metric" component with progress bar
+═══════════════════════════════════════════════════════════════════════ */
+.re-kpi-card {
+    height: 100%;
+}
+
+/* Override lightning-card inner padding */
+.re-kpi-card .slds-card__body {
+    padding: 0 !important;
+}
+
+.re-kpi-card__body {
+    padding: .875rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .375rem;
+}
+
+.re-kpi-card__body_donut {
+    align-items: center;
+}
+
+.re-kpi-card__icon-row {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+}
+
+.re-kpi-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.re-kpi-dot_navy   { background: var(--re-navy); }
+.re-kpi-dot_green  { background: var(--re-green); }
+.re-kpi-dot_blue   { background: var(--re-blue); }
+.re-kpi-dot_orange { background: var(--re-orange); }
+.re-kpi-dot_purple { background: var(--re-purple); }
+.re-kpi-dot_brand  { background: var(--re-brand); }
+
+.re-kpi-card__label {
+    font-size: .6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--re-text-weak);
+}
+
+.re-kpi-card__number {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.re-kpi-card__number_navy   { color: var(--re-navy); }
+.re-kpi-card__number_green  { color: var(--re-green); }
+.re-kpi-card__number_blue   { color: var(--re-blue); }
+.re-kpi-card__number_orange { color: var(--re-orange); }
+.re-kpi-card__number_purple { color: var(--re-purple); }
+
+.re-kpi-card__sub {
+    font-size: .75rem;
+    color: var(--re-text-weak);
+}
+
+.re-kpi-progress-wrap {
+    height: 5px;
+    background: var(--re-grey-bg);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: .25rem;
+}
+
+.re-kpi-progress {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .6s ease;
+    min-width: 2px;
+}
+
+.re-kpi-progress_green  { background: var(--re-green); }
+.re-kpi-progress_blue   { background: var(--re-blue); }
+.re-kpi-progress_orange { background: var(--re-orange); }
+.re-kpi-progress_purple { background: var(--re-purple); }
+
+/* Donut */
+.re-donut-row {
+    display: flex;
+    justify-content: center;
+    margin-top: .25rem;
+}
+
+.re-donut-svg {
+    width: 72px;
+    height: 72px;
+}
+
+.re-donut-track { stroke: #e5e5e5; }
+.re-donut-fill  { stroke: var(--re-brand); transition: stroke-dasharray .6s ease; }
+
+.re-donut-text {
+    font-size: 7px;
+    font-weight: 700;
+    fill: var(--re-navy);
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BAR CHART
+   Matches Salesforce Analytics bar chart visual style
+═══════════════════════════════════════════════════════════════════════ */
+.re-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: .75rem;
+}
+
+.re-legend-item {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .75rem;
+    color: #3e3e3c;
+    font-weight: 500;
+}
+
+.re-legend-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.re-legend-swatch_green  { background: var(--re-green); }
+.re-legend-swatch_blue   { background: var(--re-blue); }
+.re-legend-swatch_orange { background: var(--re-orange); }
+.re-legend-swatch_purple { background: var(--re-purple); }
+
+/* Chart layout */
+.re-chart-body {
+    display: flex;
+    align-items: stretch;
+    height: 220px;
+    gap: 0;
+}
+
+.re-chart-yaxis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 32px;
+    padding-bottom: 28px;
+    text-align: right;
+    padding-right: 6px;
+}
+
+.re-yaxis-label {
+    font-size: .625rem;
+    color: var(--re-text-weak);
+    line-height: 1;
+}
+
+.re-chart-plot {
+    flex: 1;
+    position: relative;
+    border-left: 1px solid var(--re-border);
+    overflow: hidden;
+}
+
+/* Horizontal grid lines */
+.re-chart-gridlines {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 28px;
+    pointer-events: none;
+}
+
+.re-gridline {
+    width: 100%;
+    height: 1px;
+    background: #f0f0f0;
+}
+
+.re-gridline_base {
+    background: var(--re-border);
+}
+
+/* Bars area */
+.re-chart-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 28px;
+    gap: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.re-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 44px;
+    max-width: 88px;
+}
+
+.re-bars-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 164px;
+}
+
+.re-bar {
+    width: 13px;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height .45s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+    position: relative;
+}
+
+.re-bar:hover {
+    filter: brightness(1.12);
+    box-shadow: 0 -2px 6px rgba(0,0,0,.18);
+}
+
+.re-bar_green  { background: var(--re-green); }
+.re-bar_blue   { background: var(--re-blue); }
+.re-bar_orange { background: var(--re-orange); }
+.re-bar_purple { background: var(--re-purple); }
+
+.re-bar-xlabel {
+    font-size: .625rem;
+    color: #3e3e3c;
+    text-align: center;
+    margin-top: 5px;
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 22px;
+    line-height: 22px;
+}
+
+/* Empty state */
+.re-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+}
+
+.re-empty-icon {
+    --sds-c-icon-color-foreground-default: #c9c9c9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOWER BREAKDOWN TABLE
+═══════════════════════════════════════════════════════════════════════ */
+.re-tower-table {
+    font-size: .8125rem;
+    width: 100%;
+}
+
+.re-th-tower { min-width: 90px; }
+.re-th-sold  { color: var(--re-green); }
+.re-th-avail { color: var(--re-blue); }
+.re-th-hold  { color: var(--re-orange); }
+
+.re-tower-name {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--re-navy);
+    max-width: 120px;
+}
+
+.re-loc-icon {
+    --sds-c-icon-color-foreground-default: var(--re-text-weak);
+    flex-shrink: 0;
+}
+
+/* lightning-badge colour overrides via host class */
+.re-badge {
+    font-size: .6875rem !important;
+    font-weight: 700 !important;
+}
+
+.re-badge_navy   { --sds-c-badge-color-background: #e8f0fe; --sds-c-badge-text-color: var(--re-navy); }
+.re-badge_green  { --sds-c-badge-color-background: var(--re-green-light); --sds-c-badge-text-color: var(--re-green); }
+.re-badge_blue   { --sds-c-badge-color-background: var(--re-blue-light); --sds-c-badge-text-color: var(--re-blue); }
+.re-badge_orange { --sds-c-badge-color-background: var(--re-orange-light); --sds-c-badge-text-color: var(--re-orange); }
+
+/* Progress row inside table */
+.re-progress-row td {
+    padding: 0 !important;
+    border-top: none !important;
+}
+
+.re-progress-cell {
+    padding: 0 .5rem .375rem !important;
+}
+
+.re-stacked-bar {
+    display: flex;
+    height: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #e5e5e5;
+}
+
+.re-stacked-bar_lg {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.re-stacked-seg {
+    height: 100%;
+    transition: width .55s ease;
+    min-width: 0;
+}
+
+.re-stacked-seg_green  { background: var(--re-green); }
+.re-stacked-seg_blue   { background: var(--re-blue); }
+.re-stacked-seg_orange { background: var(--re-orange); }
+.re-stacked-seg_purple { background: var(--re-purple); }
+
+.re-sold-pct-label {
+    font-size: .6875rem;
+    font-weight: 700;
+    color: var(--re-green);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOWER DETAIL CARDS
+   Uses slds-card structure — matches Salesforce record cards
+═══════════════════════════════════════════════════════════════════════ */
+.re-tower-card {
+    border-radius: var(--re-radius) !important;
+    box-shadow: var(--re-shadow) !important;
+    transition: var(--re-transition);
+    height: 100%;
+    border-bottom: 3px solid var(--re-blue);
+}
+
+.re-tower-card:hover {
+    box-shadow: var(--re-shadow-hover) !important;
+    transform: translateY(-2px);
+}
+
+.re-tower-card__header {
+    background: #f8f8f8;
+    border-bottom: 1px solid var(--re-border);
+    border-radius: var(--re-radius) var(--re-radius) 0 0;
+    padding: .75rem 1rem !important;
+}
+
+.re-tower-card__icon-wrap {
+    background: var(--re-navy);
+    border-radius: .25rem;
+    padding: .2rem;
+}
+
+.re-tower-card__title {
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--re-navy);
+}
+
+.re-tower-card__subtitle {
+    font-size: .75rem;
+    color: var(--re-text-weak);
+    margin-top: .125rem;
+}
+
+.re-tower-card__body {
+    padding: .75rem 1rem !important;
+}
+
+.re-tower-stat-grid {
+    gap: .5rem;
+}
+
+.re-tower-stat {
+    text-align: center;
+    padding: .5rem .25rem;
+    border-radius: .375rem;
+}
+
+.re-tower-stat_green  { background: var(--re-green-light); }
+.re-tower-stat_blue   { background: var(--re-blue-light); }
+.re-tower-stat_orange { background: var(--re-orange-light); }
+.re-tower-stat_purple { background: var(--re-purple-light); }
+
+.re-tower-stat__num {
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.re-tower-stat_green  .re-tower-stat__num { color: var(--re-green); }
+.re-tower-stat_blue   .re-tower-stat__num { color: var(--re-blue); }
+.re-tower-stat_orange .re-tower-stat__num { color: var(--re-orange); }
+.re-tower-stat_purple .re-tower-stat__num { color: var(--re-purple); }
+
+.re-tower-stat__lbl {
+    font-size: .625rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--re-text-weak);
+    margin-top: .2rem;
+    font-weight: 600;
+}
+
+.re-tower-card__footer {
+    padding: .625rem 1rem .75rem !important;
+    border-top: 1px solid var(--re-border);
+    display: flex;
+    flex-direction: column;
+    gap: .375rem;
+}
+
+.re-tower-card__footer-label {
+    text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .re-kpi-card__number { font-size: 1.5rem; }
+    .re-metric-tile__value { font-size: 1.5rem; }
+    .re-chart-body { height: 180px; }
+    .re-bars-row { height: 124px; }
+}
+
+@media (max-width: 480px) {
+    .re-tower-stat-grid { gap: .25rem; }
+    .re-tower-stat__num { font-size: 1.125rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CLICKABLE STAT TILES
+═══════════════════════════════════════════════════════════════════════ */
+.re-tower-stat_clickable {
+    cursor: pointer;
+    position: relative;
+    transition: var(--re-transition);
+    outline: none;
+}
+
+.re-tower-stat_clickable:hover {
+    filter: brightness(.93);
+    transform: scale(1.04);
+    box-shadow: 0 3px 10px rgba(0,0,0,.14);
+    z-index: 1;
+}
+
+.re-tower-stat_clickable:focus-visible {
+    outline: 2px solid var(--re-brand);
+    outline-offset: 2px;
+}
+
+.re-stat-drill-icon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    --sds-c-icon-color-foreground-default: rgba(0,0,0,.35);
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+
+.re-tower-stat_clickable:hover .re-stat-drill-icon {
+    opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DRILL-DOWN MODAL
+═══════════════════════════════════════════════════════════════════════ */
+.re-modal .slds-modal__container {
+    max-width: 900px;
+    width: 90vw;
+}
+
+.re-modal__container {
+    border-radius: var(--re-radius);
+    overflow: hidden;
+}
+
+.re-modal__header {
+    background: var(--re-navy) !important;
+    padding: 1rem 1.25rem !important;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.re-modal__header-body {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex: 1;
+}
+
+.re-modal__header-icon {
+    --sds-c-icon-color-foreground-default: #fff;
+    flex-shrink: 0;
+}
+
+.re-modal__title {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0;
+}
+
+.re-modal__subtitle {
+    font-size: .75rem;
+    color: rgba(255,255,255,.75);
+    margin-top: .125rem;
+}
+
+.re-modal__count {
+    font-weight: 700;
+    color: #fff;
+}
+
+.re-modal__content {
+    padding: 0 !important;
+    min-height: 200px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.re-modal__spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.re-modal__table {
+    width: 100%;
+}
+
+.re-modal__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: 2rem;
+}
+
+.re-modal__footer {
+    background: #f8f8f8 !important;
+    border-top: 1px solid var(--re-border) !important;
+    padding: .75rem 1.25rem !important;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Status pill colours inside datatable */
+.re-status-pill {
+    display: inline-block;
+    padding: .125rem .5rem;
+    border-radius: 1rem;
+    font-size: .6875rem;
+    font-weight: 700;
+}
+
+.modal-status_green  { background: var(--re-green-light);  color: var(--re-green); }
+.modal-status_blue   { background: var(--re-blue-light);   color: var(--re-blue); }
+.modal-status_orange { background: var(--re-orange-light); color: var(--re-orange); }
+.modal-status_purple { background: var(--re-purple-light); color: var(--re-purple); }
+
+/* Backdrop */
+.re-backdrop {
+    z-index: 8000;
+}
+
+.re-modal {
+    z-index: 8001;
+}

@@ -1,0 +1,199 @@
+<template>
+    <lightning-card title="Loan Calculator" icon-name="utility:moneybag">
+        <div slot="actions" class="slds-grid slds-grid_vertical-align-center slds-gutters_x-small">
+            <template if:true={isCalculating}>
+                <lightning-spinner alternative-text="Calculating" size="small"></lightning-spinner>
+            </template>
+
+            <lightning-button
+                label="Calculate Loan"
+                icon-name="utility:formula"
+                variant="brand"
+                onclick={calculateLoan}
+                disabled={isCalculating}>
+            </lightning-button>
+
+            <lightning-button
+                label="Download PDF"
+                icon-name="utility:download"
+                variant="neutral"
+                onclick={downloadPdf}
+                disabled={isDownloadButtonDisabled}>
+            </lightning-button>
+
+            <lightning-button
+                label="Reset"
+                icon-name="utility:refresh"
+                variant="destructive"
+                onclick={resetForm}>
+            </lightning-button>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <lightning-layout multiple-rows class="slds-gutters">
+                <!-- Left: Inputs -->
+                <lightning-layout-item size="12" large-device-size="5">
+                    <lightning-accordion allow-multiple-sections-open active-section-name="inputs">
+                        <lightning-accordion-section name="inputs" label="Loan Inputs">
+                            <lightning-layout multiple-rows class="slds-gutters">
+                                <lightning-layout-item size="12">
+                                    <lightning-input
+                                        type="number"
+                                        label="Property Price"
+                                        value={propertyPrice}
+                                        onchange={handlePropertyPriceChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <lightning-input
+                                        type="number"
+                                        label="Token Amount"
+                                        value={tokenAmount}
+                                        onchange={handleTokenAmountChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <lightning-input
+                                        type="number"
+                                        label="Down Payment"
+                                        value={downPayment}
+                                        onchange={handleDownPaymentChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <lightning-input
+                                        type="number"
+                                        label="Interest Rate (%)"
+                                        value={interestRate}
+                                        step="0.01"
+                                        onchange={handleInterestRateChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12" class="slds-m-top_x-small">
+                                    <lightning-slider
+                                        label="Loan Tenure (Years)"
+                                        min="2"
+                                        max="20"
+                                        value={loanTenure}
+                                        onchange={handleLoanTenureChange}>
+                                    </lightning-slider>
+                                    <div class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                        Selected: {loanTenure} years
+                                    </div>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12" class="slds-m-top_x-small">
+                                    <lightning-input
+                                        type="number"
+                                        label="EMI Number"
+                                        value={emiNumber}
+                                        read-only>
+                                    </lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                </lightning-layout-item>
+
+                <!-- Right: Results -->
+                <lightning-layout-item size="12" large-device-size="7">
+                    <lightning-tabset variant="scoped">
+                        <lightning-tab label="Summary">
+                            <div class="summary-tab-content">
+                                <div class="summary-container">
+                                    <!-- Loan Amount Card -->
+                                    <div class="summary-card loan-amount">
+                                        <div class="card-header">
+                                            <div class="card-icon">
+                                                <lightning-icon icon-name="utility:moneybag" size="small"></lightning-icon>
+                                            </div>
+                                            <h3 class="card-title">Loan Amount</h3>
+                                        </div>
+                                        <div class="card-value">
+                                            <div class="card-value-text">
+                                                <lightning-formatted-number value={calculatedLoanAmount} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Monthly EMI Card -->
+                                    <div class="summary-card monthly-emi">
+                                        <div class="card-header">
+                                            <div class="card-icon">
+                                                <lightning-icon icon-name="utility:trend" size="small"></lightning-icon>
+                                            </div>
+                                            <h3 class="card-title">Monthly EMI</h3>
+                                        </div>
+                                        <div class="card-value">
+                                            <div class="card-value-text">
+                                                <lightning-formatted-number value={monthlyEmi} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Payment Card -->
+                                    <div class="summary-card total-payment">
+                                        <div class="card-header">
+                                            <div class="card-icon">
+                                                <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                                            </div>
+                                            <h3 class="card-title">Total Payment</h3>
+                                        </div>
+                                        <div class="card-value">
+                                            <div class="card-value-text">
+                                                <lightning-formatted-number value={totalPayment} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Interest Card -->
+                                    <div class="summary-card total-interest">
+                                        <div class="card-header">
+                                            <div class="card-icon">
+                                                <lightning-icon icon-name="utility:warning" size="small"></lightning-icon>
+                                            </div>
+                                            <h3 class="card-title">Total Interest</h3>
+                                        </div>
+                                        <div class="card-value">
+                                            <div class="card-value-text">
+                                                <lightning-formatted-number value={totalInterest} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-tab>
+
+                        <lightning-tab label="Payment Schedule">
+                            <div class="slds-p-around_small">
+                                <template if:true={hasSchedule}>
+                                    <lightning-datatable
+                                        key-field="rowKey"
+                                        data={paymentScheduleRows}
+                                        columns={scheduleColumns}
+                                        hide-checkbox-column>
+                                    </lightning-datatable>
+                                </template>
+
+                                <template if:false={hasSchedule}>
+                                    <div class="slds-illustration slds-illustration_small slds-m-vertical_large">
+                                        <div class="slds-text-longform slds-text-align_center">
+                                            <h3 class="slds-text-heading_small">No schedule yet</h3>
+                                            <p class="slds-text-body_regular slds-text-color_weak">
+                                                Click <strong>Calculate Loan</strong> to generate the payment schedule.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </lightning-card>
+</template>

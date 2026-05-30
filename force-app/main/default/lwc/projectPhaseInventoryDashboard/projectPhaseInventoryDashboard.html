@@ -1,0 +1,76 @@
+<template>
+    <lightning-card title="Project Phase Inventory Dashboard" icon-name="custom:custom63">
+        <div class="slds-p-horizontal_medium slds-p-bottom_small">
+            <lightning-layout multiple-rows vertical-align="end">
+                <lightning-layout-item size="12" medium-device-size="4" class="slds-p-around_x-small">
+                    <lightning-input
+                        type="date"
+                        label="From Date"
+                        value={startDate}
+                        onchange={handleStartDateChange}
+                    ></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" medium-device-size="4" class="slds-p-around_x-small">
+                    <lightning-input
+                        type="date"
+                        label="To Date"
+                        value={endDate}
+                        onchange={handleEndDateChange}
+                    ></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" medium-device-size="2" class="slds-p-around_x-small">
+                    <lightning-combobox
+                        label="Item Category"
+                        value={itemCategory}
+                        options={categoryOptions}
+                        onchange={handleCategoryChange}
+                    ></lightning-combobox>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" medium-device-size="2" class="slds-p-around_x-small">
+                    <lightning-combobox
+                        label="Stock Status"
+                        value={stockStatus}
+                        options={statusOptions}
+                        onchange={handleStatusChange}
+                    ></lightning-combobox>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <div class="actions-row">
+                <lightning-button label="Reset Filters" onclick={handleResetFilters}></lightning-button>
+                <lightning-button
+                    variant="brand-outline"
+                    class="slds-m-left_small"
+                    icon-name="utility:refresh"
+                    label="Refresh"
+                    onclick={refreshData}
+                ></lightning-button>
+            </div>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner size="medium" alternative-text="Loading inventory dashboard"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="dashboard-body">
+                <c-inventory-kpi-cards
+                    total-available={summary.totalAvailable}
+                    total-used={summary.totalUsed}
+                    total-returned={summary.totalReturned}
+                    remaining-stock={summary.remainingStock}
+                    usage-percentage={summary.usagePercentage}
+                    inventory-health={summary.inventoryHealth}
+                ></c-inventory-kpi-cards>
+
+                <c-inventory-chart-panel
+                    total-available={summary.totalAvailable}
+                    total-used={summary.totalUsed}
+                    total-returned={summary.totalReturned}
+                    usage-percentage={summary.usagePercentage}
+                    inventory-health={summary.inventoryHealth}
+                ></c-inventory-chart-panel>
+            </div>
+        </template>
+    </lightning-card>
+</template>

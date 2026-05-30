@@ -5,7 +5,8 @@
       "default": true
     }
   ],
-  "name": "Real Estate &amp; Inventory Management",
+<<<<<<< HEAD
+  "name": "RealEstate",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "67.0"

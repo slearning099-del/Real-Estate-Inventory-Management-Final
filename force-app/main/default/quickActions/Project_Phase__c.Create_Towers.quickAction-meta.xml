@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Create Towers</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <targetObject>Project_Phase__c</targetObject>
+    <type>LightningComponent</type>
+    <lightningComponent>projectPhaseTowerWizard</lightningComponent>
+    <height>600</height>
+</QuickAction>

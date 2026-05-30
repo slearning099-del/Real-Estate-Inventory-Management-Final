@@ -1,0 +1,428 @@
+<template>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  LOADING SPINNER                                           -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <template if:true={isLoading}>
+        <div class="spinner-overlay">
+            <lightning-spinner alternative-text="Loading…" size="large" variant="brand"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  MAIN CONTENT                                              -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <template if:false={isLoading}>
+
+        <!-- ── LOCKED STATE ──────────────────────────────────── -->
+        <template if:true={towersAlreadyExist}>
+            <div class="wizard-wrapper">
+                <div class="locked-container">
+                    <div class="locked-icon-ring">
+                        <lightning-icon icon-name="utility:lock" size="large" alternative-text="Locked"></lightning-icon>
+                    </div>
+                    <h2 class="slds-text-heading_large slds-m-top_medium locked-title">
+                        Towers Already Created
+                    </h2>
+                    <p class="slds-text-body_regular slds-m-top_small locked-subtitle">
+                        Tower records have already been created for this Project Phase.<br/>
+                        This wizard can only be used <strong>once</strong> per Project Phase.
+                    </p>
+                    <div class="locked-badge slds-m-top_medium">
+                        <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Done"></lightning-icon>
+                        <span class="slds-m-left_x-small">Setup Complete</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ── WIZARD ────────────────────────────────────────── -->
+        <template if:false={towersAlreadyExist}>
+            <div class="wizard-wrapper">
+
+                <!-- HEADER -->
+                <div class="wizard-header">
+                    <div class="wizard-header-icon">
+                        <lightning-icon icon-name="custom:custom63" size="medium" alternative-text="Tower"></lightning-icon>
+                    </div>
+                    <div class="wizard-header-text">
+                        <h1 class="wizard-title">Tower Creation Wizard</h1>
+                        <p class="wizard-subtitle">
+                            {projectPhase.Name}&nbsp;·&nbsp;{projectPhase.Project__r.Name}
+                        </p>
+                    </div>
+                    <div class="wizard-header-step-badge">Step {currentStepNumber} of 3</div>
+                </div>
+
+                <!-- PROGRESS PATH -->
+                <div class="progress-path-container">
+                    <div class="progress-path">
+                        <div class={step1Class}>
+                            <div class="path-node">
+                                <div class="path-circle">
+                                    <template if:true={isStep1Done}>
+                                        <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Done"></lightning-icon>
+                                    </template>
+                                    <template if:false={isStep1Done}><span>1</span></template>
+                                </div>
+                                <div class="path-connector"></div>
+                            </div>
+                            <span class="path-label">Phase Details</span>
+                        </div>
+                        <div class={step2Class}>
+                            <div class="path-node">
+                                <div class="path-circle">
+                                    <template if:true={isStep2Done}>
+                                        <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Done"></lightning-icon>
+                                    </template>
+                                    <template if:false={isStep2Done}><span>2</span></template>
+                                </div>
+                                <div class="path-connector"></div>
+                            </div>
+                            <span class="path-label">Configure Towers</span>
+                        </div>
+                        <div class={step3Class}>
+                            <div class="path-node">
+                                <div class="path-circle"><span>3</span></div>
+                            </div>
+                            <span class="path-label">Review &amp; Save</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP CONTENT -->
+                <div class="wizard-body">
+
+                    <!-- ══════════════════════════════════════════ -->
+                    <!--  STEP 1 — PHASE DETAILS                    -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <template if:true={isStep1}>
+                        <div class="step-content">
+                            <div class="step-intro">
+                                <lightning-icon icon-name="standard:account" size="small" alternative-text="Phase"></lightning-icon>
+                                <div class="step-intro-text">
+                                    <h2 class="slds-text-heading_small">Project Phase Overview</h2>
+                                    <p class="slds-text-body_small slds-text-color_weak">Review the details before creating towers</p>
+                                </div>
+                            </div>
+
+                            <div class="info-grid">
+                                <div class="info-tile">
+                                    <div class="info-tile-icon info-tile-icon--blue">
+                                        <lightning-icon icon-name="utility:layers" size="x-small" alternative-text="Phase"></lightning-icon>
+                                    </div>
+                                    <div class="info-tile-content">
+                                        <span class="info-tile-label">Phase Name</span>
+                                        <span class="info-tile-value">{projectPhase.Name}</span>
+                                    </div>
+                                </div>
+                                <div class="info-tile">
+                                    <div class="info-tile-icon info-tile-icon--purple">
+                                        <lightning-icon icon-name="utility:home" size="x-small" alternative-text="Project"></lightning-icon>
+                                    </div>
+                                    <div class="info-tile-content">
+                                        <span class="info-tile-label">Project</span>
+                                        <span class="info-tile-value">{projectPhase.Project__r.Name}</span>
+                                    </div>
+                                </div>
+                                <div class="info-tile">
+                                    <div class="info-tile-icon info-tile-icon--green">
+                                        <lightning-icon icon-name="utility:activity" size="x-small" alternative-text="Status"></lightning-icon>
+                                    </div>
+                                    <div class="info-tile-content">
+                                        <span class="info-tile-label">Phase Status</span>
+                                        <span class={statusBadgeClass}>{projectPhase.Phase_Status__c}</span>
+                                    </div>
+                                </div>
+                                <div class="info-tile">
+                                    <div class="info-tile-icon info-tile-icon--orange">
+                                        <lightning-icon icon-name="utility:moneybag" size="x-small" alternative-text="Budget"></lightning-icon>
+                                    </div>
+                                    <div class="info-tile-content">
+                                        <span class="info-tile-label">Budget</span>
+                                        <span class="info-tile-value info-tile-value--currency">
+                                            <lightning-formatted-number
+                                                value={projectPhase.Budget__c}
+                                                format-style="currency"
+                                                currency-code="USD">
+                                            </lightning-formatted-number>
+                                        </span>
+                                    </div>
+                                </div>
+                                <template if:true={projectPhase.Phase_Start_Date__c}>
+                                    <div class="info-tile">
+                                        <div class="info-tile-icon info-tile-icon--teal">
+                                            <lightning-icon icon-name="utility:event" size="x-small" alternative-text="Start"></lightning-icon>
+                                        </div>
+                                        <div class="info-tile-content">
+                                            <span class="info-tile-label">Start Date</span>
+                                            <span class="info-tile-value">{projectPhase.Phase_Start_Date__c}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template if:true={projectPhase.Phase_End_Date__c}>
+                                    <div class="info-tile">
+                                        <div class="info-tile-icon info-tile-icon--red">
+                                            <lightning-icon icon-name="utility:event" size="x-small" alternative-text="End"></lightning-icon>
+                                        </div>
+                                        <div class="info-tile-content">
+                                            <span class="info-tile-label">End Date</span>
+                                            <span class="info-tile-value">{projectPhase.Phase_End_Date__c}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="info-callout slds-m-top_medium">
+                                <lightning-icon icon-name="utility:info_alt" size="x-small" alternative-text="Info"></lightning-icon>
+                                <span class="slds-m-left_x-small">
+                                    Towers will be automatically linked to this phase and its parent project.
+                                </span>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ══════════════════════════════════════════ -->
+                    <!--  STEP 2 — CONFIGURE TOWERS                 -->
+                    <!--  Virtual window: only PAGE_SIZE cards       -->
+                    <!--  are in the DOM at any time.               -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <template if:true={isStep2}>
+                        <div class="step-content">
+                            <div class="step-intro">
+                                <lightning-icon icon-name="custom:custom63" size="small" alternative-text="Tower"></lightning-icon>
+                                <div class="step-intro-text">
+                                    <h2 class="slds-text-heading_small">Configure Towers</h2>
+                                    <p class="slds-text-body_small slds-text-color_weak">
+                                        Supports up to 200 towers — only 10 cards rendered at a time
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Toggle -->
+                            <div class="toggle-card">
+                                <div class="toggle-card-left">
+                                    <div class="toggle-icon">
+                                        <lightning-icon icon-name="utility:add" size="small" alternative-text="Add"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <p class="toggle-card-title">Create Towers for this Phase</p>
+                                        <p class="toggle-card-sub slds-text-color_weak">Enable to define tower records</p>
+                                    </div>
+                                </div>
+                                <lightning-input
+                                    type="toggle"
+                                    label="Create Towers"
+                                    variant="label-hidden"
+                                    checked={wantTowers}
+                                    onchange={handleCreateTowersChange}>
+                                </lightning-input>
+                            </div>
+
+                            <template if:true={wantTowers}>
+                                <!-- Count input -->
+                                <div class="count-input-wrapper slds-m-top_medium">
+                                    <lightning-input
+                                        type="number"
+                                        label="Number of Towers"
+                                        value={numberOfTowers}
+                                        min="1"
+                                        max="200"
+                                        required
+                                        placeholder="1 – 200"
+                                        onchange={handleNumberOfTowersChange}
+                                        message-when-range-overflow="Maximum 200 towers allowed"
+                                        message-when-range-underflow="Minimum 1 tower required">
+                                    </lightning-input>
+                                </div>
+
+                                <!-- Virtual window of tower cards -->
+                                <template if:true={showTowerForms}>
+                                    <!-- Header + pagination controls -->
+                                    <div class="tower-forms-header slds-m-top_large">
+                                        <lightning-icon icon-name="utility:list" size="x-small" alternative-text="List"></lightning-icon>
+                                        <span class="slds-m-left_x-small slds-text-heading_small">
+                                            Tower Details — {numberOfTowers} tower(s)
+                                        </span>
+                                        <div class="page-controls">
+                                            <span class="page-label">{pageLabel}</span>
+                                            <lightning-button-icon
+                                                icon-name="utility:chevronleft"
+                                                alternative-text="Previous page"
+                                                size="small"
+                                                disabled={isPrevPageDisabled}
+                                                onclick={handlePrevPage}>
+                                            </lightning-button-icon>
+                                            <lightning-button-icon
+                                                icon-name="utility:chevronright"
+                                                alternative-text="Next page"
+                                                size="small"
+                                                disabled={isNextPageDisabled}
+                                                onclick={handleNextPage}>
+                                            </lightning-button-icon>
+                                        </div>
+                                    </div>
+
+                                    <!-- Only PAGE_SIZE cards in DOM -->
+                                    <div class="tower-forms-container">
+                                        <template for:each={visibleTowers} for:item="tower">
+                                            <div key={tower.index} class="tower-form-card">
+                                                <div class="tower-form-card-header">
+                                                    <div class="tower-number-badge">{tower.displayIndex}</div>
+                                                    <span class="tower-form-card-title">Tower {tower.displayIndex}</span>
+                                                    <lightning-icon icon-name="custom:custom63" size="x-small" alternative-text="Tower" class="tower-form-card-icon"></lightning-icon>
+                                                </div>
+                                                <div class="tower-form-card-body">
+                                                    <div class="tower-form-field">
+                                                        <lightning-input
+                                                            label="Tower Name"
+                                                            value={tower.Name}
+                                                            data-index={tower.index}
+                                                            required
+                                                            placeholder="e.g. Tower A"
+                                                            onchange={handleTowerNameChange}>
+                                                        </lightning-input>
+                                                    </div>
+                                                    <div class="tower-form-field">
+                                                        <lightning-combobox
+                                                            label="Status"
+                                                            value={tower.Status__c}
+                                                            placeholder="Select Status"
+                                                            options={statusOptions}
+                                                            data-index={tower.index}
+                                                            required
+                                                            onchange={handleTowerStatusChange}>
+                                                        </lightning-combobox>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <!-- Bottom pagination -->
+                                    <div class="page-controls page-controls--bottom">
+                                        <lightning-button-icon
+                                            icon-name="utility:chevronleft"
+                                            alternative-text="Previous page"
+                                            size="small"
+                                            disabled={isPrevPageDisabled}
+                                            onclick={handlePrevPage}>
+                                        </lightning-button-icon>
+                                        <span class="page-label">{pageLabel}</span>
+                                        <lightning-button-icon
+                                            icon-name="utility:chevronright"
+                                            alternative-text="Next page"
+                                            size="small"
+                                            disabled={isNextPageDisabled}
+                                            onclick={handleNextPage}>
+                                        </lightning-button-icon>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <!-- Empty state -->
+                            <template if:false={wantTowers}>
+                                <div class="empty-state slds-m-top_large">
+                                    <lightning-icon icon-name="utility:toggle_panel_right" size="medium" alternative-text="Toggle"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">Enable the toggle above to start configuring towers.</p>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- ══════════════════════════════════════════ -->
+                    <!--  STEP 3 — REVIEW & SAVE                    -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <template if:true={isStep3}>
+                        <div class="step-content">
+                            <div class="step-intro">
+                                <lightning-icon icon-name="utility:preview" size="small" alternative-text="Review"></lightning-icon>
+                                <div class="step-intro-text">
+                                    <h2 class="slds-text-heading_small">Review &amp; Confirm</h2>
+                                    <p class="slds-text-body_small slds-text-color_weak">Verify all details before saving</p>
+                                </div>
+                            </div>
+
+                            <!-- Summary banner -->
+                            <div class="summary-banner">
+                                <div class="summary-banner-item">
+                                    <span class="summary-banner-label">Phase</span>
+                                    <span class="summary-banner-value">{projectPhase.Name}</span>
+                                </div>
+                                <div class="summary-banner-divider"></div>
+                                <div class="summary-banner-item">
+                                    <span class="summary-banner-label">Project</span>
+                                    <span class="summary-banner-value">{projectPhase.Project__r.Name}</span>
+                                </div>
+                                <div class="summary-banner-divider"></div>
+                                <div class="summary-banner-item">
+                                    <span class="summary-banner-label">Towers</span>
+                                    <span class="summary-banner-value summary-banner-count">{numberOfTowers}</span>
+                                </div>
+                            </div>
+
+                            <!-- Review list (scrollable, all rows as lightweight divs) -->
+                            <div class="review-list-header slds-m-top_medium slds-m-bottom_small">
+                                <lightning-icon icon-name="utility:checklist" size="x-small" alternative-text="List"></lightning-icon>
+                                <span class="slds-m-left_x-small slds-text-title_caps slds-text-color_weak">Tower Summary</span>
+                            </div>
+
+                            <div class="review-list">
+                                <template for:each={reviewList} for:item="tower">
+                                    <div key={tower.index} class="review-item">
+                                        <div class="review-item-number">{tower.displayIndex}</div>
+                                        <div class="review-item-body">
+                                            <span class="review-item-name">{tower.Name}</span>
+                                            <span class={tower.statusClass}>{tower.Status__c}</span>
+                                        </div>
+                                        <lightning-icon icon-name="utility:check" size="x-small" alternative-text="OK" class="review-item-check"></lightning-icon>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Warning -->
+                            <div class="warning-notice slds-m-top_medium">
+                                <lightning-icon icon-name="utility:warning" size="x-small" alternative-text="Warning" class="warning-notice-icon"></lightning-icon>
+                                <div class="warning-notice-text">
+                                    <strong>One-time action:</strong> Once saved, this wizard cannot be used again for this Project Phase.
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                </div><!-- /wizard-body -->
+
+                <!-- FOOTER -->
+                <div class="wizard-footer">
+                    <div class="wizard-footer-left">
+                        <template if:false={isStep1}>
+                            <lightning-button label="← Previous" onclick={handlePrevious}></lightning-button>
+                        </template>
+                    </div>
+                    <div class="wizard-footer-right">
+                        <template if:false={isStep3}>
+                            <lightning-button
+                                variant="brand"
+                                label="Next →"
+                                onclick={handleNext}
+                                disabled={isNextDisabled}>
+                            </lightning-button>
+                        </template>
+                        <template if:true={isStep3}>
+                            <lightning-button
+                                variant="success"
+                                label="Save Towers"
+                                icon-name="utility:save"
+                                icon-position="left"
+                                onclick={handleSave}
+                                disabled={isSaveDisabled}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+
+            </div><!-- /wizard-wrapper -->
+        </template>
+
+    </template>
+</template>

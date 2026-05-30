@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WhatsApp_Link__c</fullName>
+    <externalId>false</externalId>
+    <formula>HYPERLINK(
+&quot;https://wa.me/&quot; &amp; SUBSTITUTE( Phone , &quot;+&quot;, &quot;&quot;),
+&quot;Chat on WhatsApp&quot;,
+&quot;_blank&quot;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>WhatsApp Link</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,587 @@
+<template>
+<div class="slds-var-p-around_medium re-dashboard">
+
+    <!-- ══════════════════════════════════════════════════════════
+         PAGE HEADER  –  matches Salesforce Reports & Dashboards
+    ══════════════════════════════════════════════════════════ -->
+    <div class="slds-page-header slds-page-header_record-home re-page-header">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-dashboard re-header-icon-wrap">
+                            <lightning-icon icon-name="standard:dashboard" size="medium" alternative-text="Dashboard"></lightning-icon>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate re-page-title">{cardTitle}</span>
+                                </h1>
+                            </div>
+                        </div>
+                        <p class="slds-page-header__name-meta re-page-meta">
+                            Real Estate CRM &bull; Executive Inventory &amp; Sales Overview
+                            <template if:true={lastUpdatedLabel}>
+                                &bull; <span class="re-updated-time">Refreshed {lastUpdatedLabel}</span>
+                            </template>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-page-header__col-actions">
+                <div class="slds-page-header__controls">
+                    <div class="slds-page-header__control">
+                        <lightning-button-group>
+                            <lightning-button-icon
+                                icon-name="utility:refresh"
+                                variant="border-filled"
+                                alternative-text="Refresh"
+                                title="Refresh Dashboard"
+                                onclick={handleRefresh}>
+                            </lightning-button-icon>
+                        </lightning-button-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         FILTER BAR  –  Salesforce report filter panel style
+    ══════════════════════════════════════════════════════════ -->
+    <div class="slds-var-m-top_medium">
+        <lightning-card icon-name="utility:filterList" title="Filters">
+            <div slot="actions">
+                <lightning-button label="Clear All" variant="base" onclick={handleClearFilters}></lightning-button>
+                <lightning-button label="Apply" variant="brand" onclick={handleApplyFilters} class="slds-var-m-left_x-small"></lightning-button>
+            </div>
+            <div class="slds-var-p-horizontal_medium slds-var-p-bottom_medium">
+                <div class="slds-grid slds-wrap slds-gutters_small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <lightning-combobox label="Project" value={selectedProject}
+                            options={projectOptions} onchange={handleProjectChange}
+                            placeholder="All Projects" variant="label-stacked">
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <lightning-combobox label="Project Phase" value={selectedPhase}
+                            options={phaseOptions} onchange={handlePhaseChange}
+                            placeholder="All Phases" variant="label-stacked">
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <lightning-combobox label="Tower" value={selectedTower}
+                            options={towerOptions} onchange={handleTowerChange}
+                            placeholder="All Towers" variant="label-stacked">
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <div class="slds-grid slds-gutters_xx-small">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input type="date" label="From Date" value={startDate}
+                                    onchange={handleStartDateChange} variant="label-stacked">
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input type="date" label="To Date" value={endDate}
+                                    onchange={handleEndDateChange} variant="label-stacked">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         LOADING SPINNER
+    ══════════════════════════════════════════════════════════ -->
+    <template if:true={isLoading}>
+        <div class="re-spinner-container">
+            <lightning-spinner alternative-text="Loading…" size="medium" variant="brand"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- ══════════════════════════════════════════════════════════
+         ERROR BANNER
+    ══════════════════════════════════════════════════════════ -->
+    <template if:true={hasError}>
+        <div class="slds-notify slds-notify_alert slds-alert_error slds-var-m-top_medium" role="alert">
+            <lightning-icon icon-name="utility:error" size="x-small" variant="inverse" class="slds-var-m-right_x-small"></lightning-icon>
+            <h2>{errorMessage}</h2>
+        </div>
+    </template>
+
+    <!-- ══════════════════════════════════════════════════════════
+         MAIN DASHBOARD CONTENT
+    ══════════════════════════════════════════════════════════ -->
+    <template if:true={hasData}>
+
+        <!-- ── SECTION LABEL: Project Summary ─────────────────── -->
+        <div class="re-section-label slds-var-m-top_large">
+            <lightning-icon icon-name="utility:summary" size="x-small" class="slds-var-m-right_xx-small"></lightning-icon>
+            <span>Project Summary</span>
+        </div>
+
+        <!-- ── SUMMARY METRIC TILES (Salesforce Dashboard style) ─ -->
+        <div class="slds-grid slds-wrap slds-gutters_small slds-var-m-top_x-small">
+
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-5">
+                <div class="re-metric-tile re-metric-tile_navy">
+                    <div class="re-metric-tile__icon">
+                        <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                    </div>
+                    <div class="re-metric-tile__value">{summaryData.totalProjects}</div>
+                    <div class="re-metric-tile__label">Projects</div>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-5">
+                <div class="re-metric-tile re-metric-tile_blue">
+                    <div class="re-metric-tile__icon">
+                        <lightning-icon icon-name="standard:opportunity" size="small"></lightning-icon>
+                    </div>
+                    <div class="re-metric-tile__value">{summaryData.totalPhases}</div>
+                    <div class="re-metric-tile__label">Phases</div>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-5">
+                <div class="re-metric-tile re-metric-tile_orange">
+                    <div class="re-metric-tile__icon">
+                        <lightning-icon icon-name="standard:location" size="small"></lightning-icon>
+                    </div>
+                    <div class="re-metric-tile__value">{summaryData.totalTowers}</div>
+                    <div class="re-metric-tile__label">Towers</div>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-5">
+                <div class="re-metric-tile re-metric-tile_green">
+                    <div class="re-metric-tile__icon">
+                        <lightning-icon icon-name="standard:home" size="small"></lightning-icon>
+                    </div>
+                    <div class="re-metric-tile__value">{summaryData.totalPropertyUnits}</div>
+                    <div class="re-metric-tile__label">Property Units</div>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-5">
+                <div class="re-metric-tile re-metric-tile_purple">
+                    <div class="re-metric-tile__icon">
+                        <lightning-icon icon-name="standard:product" size="small"></lightning-icon>
+                    </div>
+                    <div class="re-metric-tile__value">{summaryData.totalSubUnits}</div>
+                    <div class="re-metric-tile__label">Sub Units</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ── SECTION LABEL: KPI Cards ───────────────────────── -->
+        <div class="re-section-label slds-var-m-top_large">
+            <lightning-icon icon-name="utility:metrics" size="x-small" class="slds-var-m-right_xx-small"></lightning-icon>
+            <span>Inventory KPIs &mdash; Filtered View</span>
+        </div>
+
+        <!-- ── KPI CARDS (Salesforce Dashboard component style) ── -->
+        <div class="slds-grid slds-wrap slds-gutters_small slds-var-m-top_x-small">
+
+            <!-- Total Inventory -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_navy"></span>
+                            <span class="re-kpi-card__label">Total Inventory</span>
+                        </div>
+                        <div class="re-kpi-card__number re-kpi-card__number_navy">{kpiData.totalInventory}</div>
+                        <div class="re-kpi-card__sub">All Units</div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Sold -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_green"></span>
+                            <span class="re-kpi-card__label">Sold</span>
+                        </div>
+                        <div class="re-kpi-card__number re-kpi-card__number_green">{kpiData.totalSold}</div>
+                        <div class="re-kpi-progress-wrap">
+                            <div class="re-kpi-progress re-kpi-progress_green" style={soldBarStyle}></div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Available -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_blue"></span>
+                            <span class="re-kpi-card__label">Available</span>
+                        </div>
+                        <div class="re-kpi-card__number re-kpi-card__number_blue">{kpiData.totalAvailable}</div>
+                        <div class="re-kpi-progress-wrap">
+                            <div class="re-kpi-progress re-kpi-progress_blue" style={availableBarStyle}></div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Hold -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_orange"></span>
+                            <span class="re-kpi-card__label">Hold</span>
+                        </div>
+                        <div class="re-kpi-card__number re-kpi-card__number_orange">{kpiData.totalHold}</div>
+                        <div class="re-kpi-progress-wrap">
+                            <div class="re-kpi-progress re-kpi-progress_orange" style={holdBarStyle}></div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Booked / Reserved -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_purple"></span>
+                            <span class="re-kpi-card__label">Booked / Reserved</span>
+                        </div>
+                        <div class="re-kpi-card__number re-kpi-card__number_purple">{kpiData.totalBooked}</div>
+                        <div class="re-kpi-progress-wrap">
+                            <div class="re-kpi-progress re-kpi-progress_purple" style={bookedBarStyle}></div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Sales % with donut -->
+            <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6">
+                <lightning-card class="re-kpi-card">
+                    <div class="re-kpi-card__body re-kpi-card__body_donut">
+                        <div class="re-kpi-card__icon-row">
+                            <span class="re-kpi-dot re-kpi-dot_brand"></span>
+                            <span class="re-kpi-card__label">Sales %</span>
+                        </div>
+                        <div class="re-donut-row">
+                            <svg viewBox="0 0 36 36" class="re-donut-svg" aria-label="Sales percentage donut">
+                                <circle class="re-donut-track" cx="18" cy="18" r="15.9155" fill="none" stroke-width="3.8"></circle>
+                                <circle class="re-donut-fill" cx="18" cy="18" r="15.9155" fill="none" stroke-width="3.8"
+                                    stroke-dasharray={salesDonutDash}
+                                    transform="rotate(-90 18 18)">
+                                </circle>
+                                <text x="18" y="20.5" class="re-donut-text" text-anchor="middle">{kpiData.salesPercentage}%</text>
+                            </svg>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+        </div>
+
+        <!-- ── SECTION LABEL: Tower Inventory ─────────────────── -->
+        <div class="re-section-label slds-var-m-top_large">
+            <lightning-icon icon-name="utility:chart" size="x-small" class="slds-var-m-right_xx-small"></lightning-icon>
+            <span>Tower-wise Inventory</span>
+        </div>
+
+        <!-- ── CHART + TABLE ROW ──────────────────────────────── -->
+        <div class="slds-grid slds-wrap slds-gutters_small slds-var-m-top_x-small">
+
+            <!-- Bar Chart Card -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12">
+                <lightning-card title="Grouped Bar Chart — Flats by Tower" icon-name="utility:chart">
+                    <div class="slds-var-p-around_medium">
+                        <template if:true={hasTowerData}>
+                            <!-- Legend -->
+                            <div class="re-chart-legend">
+                                <span class="re-legend-item"><span class="re-legend-swatch re-legend-swatch_green"></span>Sold</span>
+                                <span class="re-legend-item"><span class="re-legend-swatch re-legend-swatch_blue"></span>Available</span>
+                                <span class="re-legend-item"><span class="re-legend-swatch re-legend-swatch_orange"></span>Hold</span>
+                                <span class="re-legend-item"><span class="re-legend-swatch re-legend-swatch_purple"></span>Booked</span>
+                            </div>
+                            <!-- Chart body -->
+                            <div class="re-chart-body">
+                                <!-- Y-axis -->
+                                <div class="re-chart-yaxis">
+                                    <template for:each={yAxisLabels} for:item="lbl">
+                                        <span key={lbl} class="re-yaxis-label">{lbl}</span>
+                                    </template>
+                                </div>
+                                <!-- Bars -->
+                                <div class="re-chart-plot">
+                                    <div class="re-chart-gridlines">
+                                        <div class="re-gridline"></div>
+                                        <div class="re-gridline"></div>
+                                        <div class="re-gridline"></div>
+                                        <div class="re-gridline"></div>
+                                        <div class="re-gridline re-gridline_base"></div>
+                                    </div>
+                                    <div class="re-chart-bars">
+                                        <template for:each={chartData} for:item="tower">
+                                            <div key={tower.towerId} class="re-bar-group">
+                                                <div class="re-bars-row">
+                                                    <div class="re-bar re-bar_green"  style={tower.soldStyle}      title={tower.soldTitle}></div>
+                                                    <div class="re-bar re-bar_blue"   style={tower.availableStyle} title={tower.availableTitle}></div>
+                                                    <div class="re-bar re-bar_orange" style={tower.holdStyle}      title={tower.holdTitle}></div>
+                                                    <div class="re-bar re-bar_purple" style={tower.bookedStyle}    title={tower.bookedTitle}></div>
+                                                </div>
+                                                <div class="re-bar-xlabel" title={tower.towerName}>{tower.shortName}</div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={hasTowerData}>
+                            <div class="re-empty-state">
+                                <lightning-icon icon-name="utility:chart" size="large" class="re-empty-icon"></lightning-icon>
+                                <p class="slds-text-color_weak slds-var-m-top_small">No tower data for the selected filters.</p>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Tower Breakdown Table Card -->
+            <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12">
+                <lightning-card title="Tower Breakdown" icon-name="utility:table">
+                    <div class="slds-var-p-horizontal_small slds-var-p-bottom_small">
+                        <template if:true={hasTowerData}>
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered re-tower-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col" class="re-th-tower"><div class="slds-truncate">Tower</div></th>
+                                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate">Total</div></th>
+                                        <th scope="col" class="slds-text-align_right re-th-sold"><div class="slds-truncate">Sold</div></th>
+                                        <th scope="col" class="slds-text-align_right re-th-avail"><div class="slds-truncate">Avail</div></th>
+                                        <th scope="col" class="slds-text-align_right re-th-hold"><div class="slds-truncate">Hold</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={towerTableData} for:item="row">
+                                        <tr key={row.towerId} class="slds-hint-parent">
+                                            <td>
+                                                <div class="slds-truncate re-tower-name" title={row.towerName}>
+                                                    <lightning-icon icon-name="utility:location" size="xx-small" class="slds-var-m-right_xx-small re-loc-icon"></lightning-icon>
+                                                    {row.towerName}
+                                                </div>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <lightning-badge label={row.totalFlatsStr} class="re-badge re-badge_navy"></lightning-badge>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <lightning-badge label={row.soldFlatsStr} class="re-badge re-badge_green"></lightning-badge>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <lightning-badge label={row.availableFlatsStr} class="re-badge re-badge_blue"></lightning-badge>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <lightning-badge label={row.holdFlatsStr} class="re-badge re-badge_orange"></lightning-badge>
+                                            </td>
+                                        </tr>
+                                        <!-- Stacked progress row -->
+                                        <tr key={row.towerIdProgress} class="re-progress-row">
+                                            <td colspan="5" class="re-progress-cell">
+                                                <div class="re-stacked-bar">
+                                                    <div class="re-stacked-seg re-stacked-seg_green"  style={row.soldStackStyle}></div>
+                                                    <div class="re-stacked-seg re-stacked-seg_purple" style={row.bookedStackStyle}></div>
+                                                    <div class="re-stacked-seg re-stacked-seg_orange" style={row.holdStackStyle}></div>
+                                                    <div class="re-stacked-seg re-stacked-seg_blue"   style={row.availableStackStyle}></div>
+                                                </div>
+                                                <span class="re-sold-pct-label">{row.soldPct}% sold</span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                        <template if:false={hasTowerData}>
+                            <p class="slds-text-align_center slds-text-color_weak slds-var-p-around_medium">No data.</p>
+                        </template>
+                    </div>
+                </lightning-card>
+            </div>
+
+        </div>
+
+        <!-- ── SECTION LABEL: Tower Detail Cards ──────────────── -->
+        <div class="re-section-label slds-var-m-top_large">
+            <lightning-icon icon-name="standard:location" size="x-small" class="slds-var-m-right_xx-small"></lightning-icon>
+            <span>Tower Detail Cards</span>
+        </div>
+
+        <!-- ── TOWER DETAIL CARDS GRID ───────────────────────── -->
+        <div class="slds-grid slds-wrap slds-gutters_small slds-var-m-top_x-small slds-var-m-bottom_large">
+            <template for:each={towerTableData} for:item="tower">
+                <div key={tower.towerId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <article class="slds-card re-tower-card">
+                        <!-- Card Header -->
+                        <div class="slds-card__header re-tower-card__header">
+                            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-location re-tower-card__icon-wrap">
+                                        <lightning-icon icon-name="standard:location" size="small" alternative-text="Tower"></lightning-icon>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-truncate re-tower-card__title" title={tower.towerName}>{tower.towerName}</span>
+                                    </h2>
+                                    <p class="re-tower-card__subtitle">{tower.totalFlats} Total Units</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card Body -->
+                        <div class="slds-card__body slds-card__body_inner re-tower-card__body">
+                            <div class="slds-grid slds-wrap re-tower-stat-grid">
+                                <div class="slds-col slds-size_1-of-2 re-tower-stat re-tower-stat_green re-tower-stat_clickable"
+                                    data-tower-id={tower.towerId}
+                                    data-tower-name={tower.towerName}
+                                    data-status="Sold"
+                                    onclick={handleStatClick}
+                                    role="button"
+                                    tabindex="0">
+                                    <div class="re-tower-stat__num">{tower.soldFlats}</div>
+                                    <div class="re-tower-stat__lbl">Sold</div>
+                                    <lightning-icon icon-name="utility:new_window" size="xx-small" class="re-stat-drill-icon"></lightning-icon>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 re-tower-stat re-tower-stat_blue re-tower-stat_clickable"
+                                    data-tower-id={tower.towerId}
+                                    data-tower-name={tower.towerName}
+                                    data-status="Available"
+                                    onclick={handleStatClick}
+                                    role="button"
+                                    tabindex="0">
+                                    <div class="re-tower-stat__num">{tower.availableFlats}</div>
+                                    <div class="re-tower-stat__lbl">Available</div>
+                                    <lightning-icon icon-name="utility:new_window" size="xx-small" class="re-stat-drill-icon"></lightning-icon>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 re-tower-stat re-tower-stat_orange re-tower-stat_clickable"
+                                    data-tower-id={tower.towerId}
+                                    data-tower-name={tower.towerName}
+                                    data-status="Hold"
+                                    onclick={handleStatClick}
+                                    role="button"
+                                    tabindex="0">
+                                    <div class="re-tower-stat__num">{tower.holdFlats}</div>
+                                    <div class="re-tower-stat__lbl">Hold</div>
+                                    <lightning-icon icon-name="utility:new_window" size="xx-small" class="re-stat-drill-icon"></lightning-icon>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 re-tower-stat re-tower-stat_purple re-tower-stat_clickable"
+                                    data-tower-id={tower.towerId}
+                                    data-tower-name={tower.towerName}
+                                    data-status="Booked"
+                                    onclick={handleStatClick}
+                                    role="button"
+                                    tabindex="0">
+                                    <div class="re-tower-stat__num">{tower.bookedFlats}</div>
+                                    <div class="re-tower-stat__lbl">Booked</div>
+                                    <lightning-icon icon-name="utility:new_window" size="xx-small" class="re-stat-drill-icon"></lightning-icon>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card Footer -->
+                        <div class="slds-card__footer re-tower-card__footer">
+                            <div class="re-stacked-bar re-stacked-bar_lg">
+                                <div class="re-stacked-seg re-stacked-seg_green"  style={tower.soldStackStyle}     title="Sold"></div>
+                                <div class="re-stacked-seg re-stacked-seg_purple" style={tower.bookedStackStyle}   title="Booked"></div>
+                                <div class="re-stacked-seg re-stacked-seg_orange" style={tower.holdStackStyle}     title="Hold"></div>
+                                <div class="re-stacked-seg re-stacked-seg_blue"   style={tower.availableStackStyle} title="Available"></div>
+                            </div>
+                            <div class="re-tower-card__footer-label">
+                                <span class="re-sold-pct-label">{tower.soldPct}% Sold</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </template>
+        </div>
+
+    </template>
+    <!-- end hasData -->
+
+    <!-- ══════════════════════════════════════════════════════════
+         DRILL-DOWN MODAL  –  Property Units by Tower & Status
+    ══════════════════════════════════════════════════════════ -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true"
+            aria-labelledby="modal-heading"
+            class="slds-modal slds-fade-in-open re-modal">
+            <div class="slds-modal__container re-modal__container">
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header re-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        variant="bare-inverse"
+                        alternative-text="Close"
+                        title="Close"
+                        onclick={handleModalClose}
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                    <div class="re-modal__header-body">
+                        <lightning-icon icon-name="standard:home" size="small" class="slds-var-m-right_small re-modal__header-icon"></lightning-icon>
+                        <div>
+                            <h2 id="modal-heading" class="slds-modal__title re-modal__title">{modalTitle}</h2>
+                            <p class="re-modal__subtitle">
+                                <span class="re-modal__count">{modalUnitCount}</span> unit(s) found &bull; Click a row to open the record
+                            </p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content re-modal__content">
+                    <template if:true={isModalLoading}>
+                        <div class="re-modal__spinner">
+                            <lightning-spinner alternative-text="Loading units…" size="medium" variant="brand"></lightning-spinner>
+                        </div>
+                    </template>
+
+                    <template if:false={isModalLoading}>
+                        <template if:true={hasModalUnits}>
+                            <lightning-datatable
+                                key-field="id"
+                                data={modalUnits}
+                                columns={unitColumnsWithAction}
+                                onrowaction={handleRowAction}
+                                hide-checkbox-column
+                                resize-column-disabled
+                                class="re-modal__table">
+                            </lightning-datatable>
+                        </template>
+                        <template if:false={hasModalUnits}>
+                            <div class="re-modal__empty">
+                                <lightning-icon icon-name="utility:inbox" size="large" class="re-empty-icon"></lightning-icon>
+                                <p class="slds-text-color_weak slds-var-m-top_small">No units found for this status.</p>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer re-modal__footer">
+                    <lightning-button label="Close" variant="neutral" onclick={handleModalClose}></lightning-button>
+                </footer>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open re-backdrop"></div>
+    </template>
+
+</div>
+</template>

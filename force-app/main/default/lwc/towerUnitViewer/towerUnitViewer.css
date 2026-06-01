@@ -1,0 +1,292 @@
+/* ============================================================
+   Tower Unit Viewer — Custom Styles
+   ============================================================ */
+
+/* ── Filters bar ─────────────────────────────────────────── */
+.filter-bar {
+    background: linear-gradient(135deg, #032d60 0%, #0176d3 100%);
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-bar .filter-title {
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+/* Override combobox label colour inside dark bar */
+.filter-bar .slds-form-element__label {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 600;
+}
+
+/* ── Stats strip ─────────────────────────────────────────── */
+.stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.625rem;
+    padding: 1rem 1.25rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #706e6b;
+}
+
+.stat-available  .stat-value { color: #2e844a; }
+.stat-booked     .stat-value { color: #e45c00; }
+.stat-sold       .stat-value { color: #c23934; }
+.stat-total      .stat-value { color: #0176d3; }
+
+/* ── Section heading ─────────────────────────────────────── */
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #032d60;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+/* ── Unit grid ───────────────────────────────────────────── */
+.units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ── Unit card ───────────────────────────────────────────── */
+.unit-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.unit-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* coloured top accent bar driven by status */
+.unit-card-accent {
+    height: 5px;
+}
+.accent-available { background: linear-gradient(90deg, #2e844a, #45c65a); }
+.accent-booked    { background: linear-gradient(90deg, #e45c00, #ff8c42); }
+.accent-sold      { background: linear-gradient(90deg, #c23934, #e05c57); }
+.accent-default   { background: linear-gradient(90deg, #0176d3, #1b96ff); }
+
+.unit-card-header {
+    padding: 1rem 1.25rem 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.unit-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #032d60;
+    margin: 0;
+}
+
+.unit-floor {
+    font-size: 0.75rem;
+    color: #706e6b;
+    margin-top: 0.15rem;
+}
+
+/* Status badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.badge-available { background: #eaf5ea; color: #2e844a; }
+.badge-booked    { background: #fff3e0; color: #e45c00; }
+.badge-sold      { background: #fde8e8; color: #c23934; }
+.badge-default   { background: #e8f4fd; color: #0176d3; }
+
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Unit details grid */
+.unit-details {
+    padding: 0 1.25rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 1rem;
+    flex: 1;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.detail-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #706e6b;
+}
+
+.detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #181818;
+}
+
+.detail-value.price {
+    color: #0176d3;
+    font-size: 0.95rem;
+}
+
+.detail-value.final-price {
+    color: #2e844a;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* ── Sub-units section ───────────────────────────────────── */
+.sub-units-section {
+    border-top: 1px solid #f3f3f3;
+    padding: 0.75rem 1.25rem 1rem;
+    background: #f9f9f9;
+}
+
+.sub-units-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #706e6b;
+    margin-bottom: 0.5rem;
+}
+
+.sub-unit-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #ffffff;
+    border: 1px solid #d8d8d8;
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.65rem;
+    margin: 0.2rem;
+    font-size: 0.78rem;
+}
+
+.sub-unit-chip-name {
+    font-weight: 600;
+    color: #032d60;
+}
+
+.sub-unit-chip-price {
+    color: #0176d3;
+    font-weight: 600;
+}
+
+/* ── Empty / loading states ──────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #706e6b;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.4;
+}
+
+.empty-state-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 0.4rem;
+}
+
+.empty-state-subtitle {
+    font-size: 0.875rem;
+}
+
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+}
+
+/* ── Responsive tweaks ───────────────────────────────────── */
+@media (max-width: 480px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+    .units-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

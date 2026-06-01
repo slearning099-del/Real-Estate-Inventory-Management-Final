@@ -1,0 +1,154 @@
+<template>
+    <lightning-card>
+        <!-- Card Header slot: custom icon + title -->
+        <span slot="title">
+            <lightning-icon icon-name="standard:home" size="small" class="slds-m-right_x-small"></lightning-icon>
+            Tower Unit Viewer
+        </span>
+
+        <div class="slds-p-around_medium">
+
+            <!-- ── Filter Bar ──────────────────────────────────── -->
+            <div class="filter-bar">
+                <div class="filter-title">
+                    <lightning-icon icon-name="utility:filter" size="xx-small" alternative-text="Filter"></lightning-icon>
+                    Filter Units
+                </div>
+                <div class="filter-grid">
+                    <lightning-combobox
+                        label="Project"
+                        placeholder="Select a project…"
+                        value={selectedProjectId}
+                        options={projectOptions}
+                        onchange={handleProjectChange}>
+                    </lightning-combobox>
+
+                    <lightning-combobox
+                        label="Phase"
+                        placeholder="Select a phase…"
+                        value={selectedPhaseId}
+                        options={phaseOptions}
+                        onchange={handlePhaseChange}
+                        disabled={isPhaseDisabled}>
+                    </lightning-combobox>
+
+                    <lightning-combobox
+                        label="Tower"
+                        placeholder="Select a tower…"
+                        value={selectedTowerId}
+                        options={towerOptions}
+                        onchange={handleTowerChange}
+                        disabled={isTowerDisabled}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <!-- ── Loading Spinner ────────────────────────────── -->
+            <template if:true={loading}>
+                <div class="loading-wrapper">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- ── Stats Strip ────────────────────────────────── -->
+            <template if:true={showUnits}>
+                <div class="stats-strip">
+                    <div class="stat-card stat-total">
+                        <div class="stat-value">{totalUnits}</div>
+                        <div class="stat-label">Total Units</div>
+                    </div>
+                    <div class="stat-card stat-available">
+                        <div class="stat-value">{availableUnits}</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                    <div class="stat-card stat-booked">
+                        <div class="stat-value">{bookedUnits}</div>
+                        <div class="stat-label">Booked</div>
+                    </div>
+                    <div class="stat-card stat-sold">
+                        <div class="stat-value">{soldUnits}</div>
+                        <div class="stat-label">Sold</div>
+                    </div>
+                </div>
+
+                <!-- ── Units Grid ──────────────────────────────── -->
+                <div class="section-heading">
+                    <lightning-icon icon-name="utility:home" size="x-small" alternative-text="Units"></lightning-icon>
+                    Property Units
+                    <lightning-badge label={totalUnitsLabel} class="slds-m-left_x-small"></lightning-badge>
+                </div>
+
+                <div class="units-grid">
+                    <template for:each={propertyUnits} for:item="unit">
+                        <div key={unit.Id} class="unit-card">
+
+                            <!-- Accent bar -->
+                            <div class={unit.accentClass}></div>
+
+                            <!-- Card header row -->
+                            <div class="unit-card-header">
+                                <div>
+                                    <h3 class="unit-name">{unit.Name}</h3>
+                                    <div class="unit-floor">{unit.floorLabel}</div>
+                                </div>
+                                <span class={unit.badgeClass}>
+                                    <span class="badge-dot"></span>
+                                    {unit.Property_Unit_Status__c}
+                                </span>
+                            </div>
+
+                            <!-- Details grid -->
+                            <div class="unit-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">View Type</span>
+                                    <span class="detail-value">{unit.Unit_View_Type__c}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Area (sq ft)</span>
+                                    <span class="detail-value">{unit.Area_sqft__c}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Base Price</span>
+                                    <span class="detail-value price">{unit.formattedBasePrice}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Final Amount</span>
+                                    <span class="detail-value final-price">{unit.formattedFinalAmount}</span>
+                                </div>
+                            </div>
+
+                            <!-- Sub-units chips -->
+                            <template if:true={unit.hasSubUnits}>
+                                <div class="sub-units-section">
+                                    <div class="sub-units-title">
+                                        <lightning-icon icon-name="utility:layers" size="xx-small" alternative-text="Sub Units"></lightning-icon>
+                                        Sub Units
+                                    </div>
+                                    <div>
+                                        <template for:each={unit.subUnits} for:item="sub">
+                                            <span key={sub.Id} class="sub-unit-chip">
+                                                <span class="sub-unit-chip-name">{sub.Name}</span>
+                                                <span class="sub-unit-chip-price">₹{sub.Sub_Unit_Price__c}</span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ── Empty / Prompt State ───────────────────────── -->
+            <template if:true={showEmptyState}>
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏢</div>
+                    <div class="empty-state-title">{emptyStateTitle}</div>
+                    <div class="empty-state-subtitle">{emptyStateSubtitle}</div>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
